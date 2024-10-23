@@ -37,7 +37,6 @@ def get_db():
 ### Normal Youtube API
 # 1. Retrieve 12 videos from Youtube API and return them as a list (Requirement 2)
 youtube_endpoint = "https://www.googleapis.com/youtube/v3/search"
-
 # Function to call YouTube API
 def search_youtube(query: str, max_results: int = 12):
     params = {
@@ -54,29 +53,6 @@ def search_youtube(query: str, max_results: int = 12):
         raise HTTPException(status_code=response.status_code, detail="Error fetching data from YouTube API")
     
     return response.json()
-
-@app.get("/get_videos/")
-def get_youtube_videos(query: str):
-    """
-    Fetch YouTube videos based on a search query and return the results.
-    """
-    try:
-        youtube_response = search_youtube(query)
-        # videos = []
-        # for item in youtube_response.get('items', []):
-        #     video_data = {
-        #         'title': item['snippet']['title'],
-        #         'description': item['snippet']['description'],
-        #         'thumbnail': item['snippet']['thumbnails']['default']['url'],
-        #         'videoId': item['id'].get('videoId', None)
-        #     }
-        #     videos.append(video_data)
-
-        # return {"videos": videos}
-        return youtube_response
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 ### Keywords API
 # Keyword table in the database
@@ -106,6 +82,28 @@ def read_keywords(skip: int = 0, limit: int = 10, db: Session = Depends(get_db))
     return keywords
 
 # 2. Call Youtube API to return a list of videos based on the keywords (Requirement 5)
+@app.get("/get_videos/")
+def get_youtube_videos(query: str):
+    """
+    Fetch YouTube videos based on a search query and return the results.
+    """
+    try:
+        youtube_response = search_youtube(query)
+        # videos = []
+        # for item in youtube_response.get('items', []):
+        #     video_data = {
+        #         'title': item['snippet']['title'],
+        #         'description': item['snippet']['description'],
+        #         'thumbnail': item['snippet']['thumbnails']['default']['url'],
+        #         'videoId': item['id'].get('videoId', None)
+        #     }
+        #     videos.append(video_data)
+
+        # return {"videos": videos}
+        return youtube_response
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # 3. Default Keywords should be - "AI", "Software Development", "Debugging", "Testing", "Workflow", "Documentation", "Learning", "Tools", "Automation", then
