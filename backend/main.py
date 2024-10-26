@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import os
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -33,6 +34,14 @@ def get_db():
         yield db
     finally:
         db.close()
+        
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or use ["*"] to allow all origins during development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 ### Normal Youtube API
 # 1. Retrieve 12 videos from Youtube API and return them as a list (Requirement 2)
@@ -89,18 +98,18 @@ def get_youtube_videos(query: str):
     """
     try:
         youtube_response = search_youtube(query)
-        # videos = []
-        # for item in youtube_response.get('items', []):
-        #     video_data = {
-        #         'title': item['snippet']['title'],
-        #         'description': item['snippet']['description'],
-        #         'thumbnail': item['snippet']['thumbnails']['default']['url'],
-        #         'videoId': item['id'].get('videoId', None)
-        #     }
-        #     videos.append(video_data)
+        videos = []
+        for item in youtube_response.get('items', []):
+            video_data = {
+                'title': item['snippet']['title'],
+                'description': item['snippet']['description'],
+                'thumbnail': item['snippet']['thumbnails']['default']['url'],
+                'videoId': item['id'].get('videoId', None)
+            }
+            videos.append(video_data)
 
-        # return {"videos": videos}
-        return youtube_response
+        return {"items": videos}
+        # return youtube_response
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
