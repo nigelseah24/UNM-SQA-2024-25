@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 import { fetchVideos } from "./api";
+import './VideoList.css';
 
 interface Video {
   title: string;
@@ -13,7 +14,7 @@ interface VideoListProps {
   query: string;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ query }) => {
+const VideoList: React.FC<VideoListProps> = ({ query }) =>{
   const [videos, setVideos] = useState<Video[]>([]);
 
   useEffect(() => {
