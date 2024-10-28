@@ -7,6 +7,13 @@ import "./App.css";
 const App: React.FC = () => {
   const [query, setQuery] = useState("AI");
 
+  // for selecting multiple keywords
+  const handleKeywordsSelect = (selectedKeywords: string[]) => {
+    const combinedQuery = selectedKeywords.join('+');  // combine keywords with '+'
+    setQuery(combinedQuery);
+  };
+
+  // for adding keyword
   const handleKeywordSelect = (keyword: string) => {
     setQuery(keyword);
   };
@@ -15,7 +22,7 @@ const App: React.FC = () => {
     <div className="App">
       <h1>YouTube Video Collection App</h1>
       <AddKeywordForm onKeywordAdded={() => handleKeywordSelect(query)} />
-      <KeywordList onKeywordSelect={handleKeywordSelect} />
+      <KeywordList onKeywordsSelect={handleKeywordsSelect} />
       <VideoList query={query} />
     </div>
   );
