@@ -104,7 +104,9 @@ def get_youtube_videos(query: str):
                 'title': item['snippet']['title'],
                 'description': item['snippet']['description'],
                 'thumbnail': item['snippet']['thumbnails']['default']['url'],
-                'videoId': item['id'].get('videoId', None)
+                'videoId': item['id'].get('videoId', None),
+                'channelTitle': item['snippet']['channelTitle'],
+                'publishedAt': item['snippet']['publishedAt'],
             }
             videos.append(video_data)
 
