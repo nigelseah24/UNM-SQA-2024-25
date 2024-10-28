@@ -1,10 +1,11 @@
 
 
 .video-list {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(3, 1fr); /* 3 columns */
-    gap: 16px;
     margin: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 @media (max-width: 768px) {
@@ -25,11 +26,15 @@
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s;
+    margin: 1rem;
+    padding: 1rem;
+    text-align: left;
 }
 
 .video-card img {
     width: 100%;
     height: auto;
+    border-radius: 4px;
 }
 
 .video-card h3 {

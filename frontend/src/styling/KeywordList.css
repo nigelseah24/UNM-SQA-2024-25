@@ -31,3 +31,7 @@
     background-color: #4CAF50;
     color: white;
 }
+
+.keyword-list, .add-keyword-form {
+  margin: 1rem;
+}

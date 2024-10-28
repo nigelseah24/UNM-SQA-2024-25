@@ -1,0 +1,44 @@
+.App {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  .video-card {
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: left;
+  }
+  
+  
+  /* .keyword-list, .add-keyword-form {
+    margin: 1rem;
+  } */
+  
+  /* Wrapper for video list and player */
+.content-wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Left column for the video list */
+.video-list-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 20px;
+}
+
+/* Right column for the video player */
+.video-player-wrapper {
+  flex: 0 0 350px;  /* Set a fixed width for the player */
+  position: sticky;
+  top: 20px;  /* Adjust top offset as needed */
+  height: fit-content;
+}
+
+/* Style the player itself */
+.video-player {
+  width: 100%;
+  margin: 0 auto;
+}

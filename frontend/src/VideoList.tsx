@@ -12,9 +12,10 @@ interface Video {
 
 interface VideoListProps {
   query: string;
+  onVideoSelect: (videoId: string) => void;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ query }) =>{
+const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
   const [videos, setVideos] = useState<Video[]>([]);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ const VideoList: React.FC<VideoListProps> = ({ query }) =>{
   return (
     <div className="video-list">
       {videos.map((video, index) => (
-        <VideoCard key={index} {...video} />
+        <VideoCard key={index} {...video} onClick={() => onVideoSelect(video.videoId)} />
       ))}
     </div>
   );
