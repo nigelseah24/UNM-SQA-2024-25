@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchKeywords } from "./api";
+import "./styling/KeywordList.css";
 
 interface Keyword {
   id: number;

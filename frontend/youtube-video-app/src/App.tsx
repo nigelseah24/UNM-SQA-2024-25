@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import VideoList from "./VideoList";
 import KeywordList from "./KeywordList";
 import AddKeywordForm from "./AddKeyword";
-import "./App.css";
+import "./styling/App.css";
 
 const App: React.FC = () => {
   const [query, setQuery] = useState("AI");
