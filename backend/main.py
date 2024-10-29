@@ -44,18 +44,34 @@ app.add_middleware(
 )
 
 ### Normal Youtube API
-# 1. Retrieve 12 videos from Youtube API and return them as a list (Requirement 2)
-youtube_endpoint = "https://www.googleapis.com/youtube/v3/search"
+# 1. Retrieve videos from Youtube API and return them as a list (Requirement 2)
+youtube_search_video_endpoint = "https://www.googleapis.com/youtube/v3/search"
 # Function to call YouTube API
-def search_youtube(query: str, max_results: int = 12):
+def search_youtube(query: str):
     params = {
         'part': 'snippet',
         'q': query,
-        'maxResults': max_results,
         'key': YOUTUBE_API_KEY
     }
     
-    response = requests.get(youtube_endpoint, params=params)
+    response = requests.get(youtube_search_video_endpoint, params=params)
+    
+    # Check for API errors
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Error fetching data from YouTube API")
+    
+    return response.json()
+
+# 2. Get video data from Youtube API 
+youtube_video_data_endpoint = "https://www.googleapis.com/youtube/v3/videos"
+def get_video_data(video_ids: List[str]):
+    params = {
+        'part': 'snippet,statistics,contentDetails',
+        'id': ','.join(video_ids),
+        'key': YOUTUBE_API_KEY
+    }
+    
+    response = requests.get(youtube_video_data_endpoint, params=params)
     
     # Check for API errors
     if response.status_code != 200:
@@ -97,21 +113,32 @@ def get_youtube_videos(query: str):
     Fetch YouTube videos based on a search query and return the results.
     """
     try:
+        # Call the search_youtube function to retrieve video IDs
         youtube_response = search_youtube(query)
+        print(youtube_response)
+        video_ids = [item['id']['videoId'] for item in youtube_response.get('items', []) if 'videoId' in item['id']]
+
+        # Ensure only 12 video IDs are retrieved
+        video_ids = video_ids[:12]
+        
+        # Call the get_video_data function with the video IDs
+        video_data_response = get_video_data(video_ids)
+        
         videos = []
-        for item in youtube_response.get('items', []):
+        for item in video_data_response.get('items', []):
             video_data = {
                 'title': item['snippet']['title'],
                 'description': item['snippet']['description'],
-                'thumbnail': item['snippet']['thumbnails']['default']['url'],
-                'videoId': item['id'].get('videoId', None),
+                'thumbnail': item['snippet']['thumbnails']['high']['url'],
                 'channelTitle': item['snippet']['channelTitle'],
                 'publishedAt': item['snippet']['publishedAt'],
+                'viewCount': item['statistics']['viewCount'],
+                'likeCount': item['statistics']['likeCount'],
+                'duration': item['contentDetails']['duration'],
             }
             videos.append(video_data)
 
         return {"items": videos}
-        # return youtube_response
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
