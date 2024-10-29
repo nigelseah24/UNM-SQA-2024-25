@@ -117,27 +117,7 @@ def get_youtube_videos(query: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# 3. Default Keywords should be - "AI", "Software Development", "Debugging", "Testing", "Workflow", "Documentation", "Learning", "Tools", "Automation", then
-# return them as a list (Requirement 6)
-@app.get("/get_videos_default_keywords/")
-def get_default_keywords_videos():
-    # default_keywords = ["AI", "Software Development", "Debugging", "Testing", "Workflow", "Documentation", "Learning", "Tools", "Automation"]
-    # videos = []
-    # for keyword in default_keywords:
-    #     youtube_response = search_youtube(keyword)
-    #     for item in youtube_response.get('items', []):
-    #         video_data = {
-    #             'title': item['snippet']['title'],
-    #             'description': item['snippet']['description'],
-    #             'thumbnail': item['snippet']['thumbnails']['default']['url'],
-    #             'videoId': item['id'].get('videoId', None)
-    #         }
-    #         videos.append(video_data)
-    default_keywords = "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation"
-    
-    return get_youtube_videos(default_keywords)
-
-# 4. Allow user to add new keywords to the database (Requirement 7)
+# 3. Allow user to add new keywords to the database (Requirement 7)
 @app.post("/keywords/", response_model=KeywordResponse)
 def create_keyword(keyword: KeywordCreate, db: Session = Depends(get_db)):
     db_keyword = Keyword(name=keyword.name)  # Create a Keyword instance
