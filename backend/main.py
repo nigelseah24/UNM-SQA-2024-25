@@ -51,6 +51,7 @@ def search_youtube(query: str):
     params = {
         'part': 'snippet',
         'q': query,
+        'maxResults': 12,
         'key': YOUTUBE_API_KEY
     }
     
@@ -138,6 +139,7 @@ def get_youtube_videos(query: str):
             }
             videos.append(video_data)
 
+        print(f"Final video count: {len(videos)}")
         return {"items": videos}
     
     except Exception as e:

@@ -5,9 +5,12 @@ import './styling/VideoList.css';
 
 interface Video {
   title: string;
-  description: string;
   thumbnail: string;
   videoId: string;
+  channelTitle: string;
+  publishedAt: string;
+  viewCount: string;
+  duration: string;
 }
 
 interface VideoListProps {
@@ -30,7 +33,16 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
   return (
     <div className="video-list">
       {videos.map((video, index) => (
-        <VideoCard key={index} {...video} onClick={() => onVideoSelect(video.videoId)} />
+        <VideoCard 
+        key={index} 
+        title={video.title}
+        thumbnail={video.thumbnail}
+        videoId={video.videoId} 
+        channelTitle={video.channelTitle}
+        publishedAt={video.publishedAt}
+        viewCount={video.viewCount}
+        duration={video.duration}
+        onClick={() => onVideoSelect(video.videoId)} />
       ))}
     </div>
   );
