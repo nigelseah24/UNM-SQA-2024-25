@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface VideoPlayerProps {
   videoId: string | null;  // Video ID to play, null when no video is selected
@@ -6,6 +6,10 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
 const videoRef = useRef<HTMLIFrameElement | null>(null);
+
+useEffect(() => {
+    console.log("Rendering VideoPlayer with videoId:", videoId); // Log when videoId changes
+}, [videoId]);
 
 return (
     <div className="video-player" style={{ textAlign: 'center', margin: '20px auto' }}>

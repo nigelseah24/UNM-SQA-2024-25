@@ -21,6 +21,7 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
   useEffect(() => {
     const loadVideos = async () => {
       const result = await fetchVideos(query);
+      console.log("Fetched videos:", result);
       setVideos(result);
     };
 
@@ -30,7 +31,12 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
   return (
     <div className="video-list">
       {videos.map((video, index) => (
-        <VideoCard key={index} {...video} onClick={() => onVideoSelect(video.videoId)} />
+        <VideoCard 
+        key={index} 
+        {...video} 
+        onClick={() =>{  
+          console.log("Selected videoId in VideoList:", video.videoId); 
+          onVideoSelect(video.videoId)}} />
       ))}
     </div>
   );

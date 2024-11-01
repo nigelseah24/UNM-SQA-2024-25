@@ -51,7 +51,8 @@ def search_youtube(query: str):
     params = {
         'part': 'snippet',
         'q': query,
-        'key': YOUTUBE_API_KEY
+        'key': YOUTUBE_API_KEY,
+        'type': 'video'
     }
     
     response = requests.get(youtube_search_video_endpoint, params=params)
@@ -121,6 +122,8 @@ def get_youtube_videos(query: str):
         # Ensure only 12 video IDs are retrieved
         video_ids = video_ids[:12]
         
+        print("Extracted video IDs:", video_ids)
+
         # Call the get_video_data function with the video IDs
         video_data_response = get_video_data(video_ids)
         
@@ -135,6 +138,7 @@ def get_youtube_videos(query: str):
                 'viewCount': item['statistics']['viewCount'],
                 'likeCount': item['statistics']['likeCount'],
                 'duration': item['contentDetails']['duration'],
+                'videoId': item['id']
             }
             videos.append(video_data)
 
