@@ -136,6 +136,7 @@ def get_youtube_videos(query: str):
                 'viewCount': item['statistics']['viewCount'],
                 'likeCount': item['statistics']['likeCount'],
                 'duration': item['contentDetails']['duration'],
+                'videoId': item['id']
             }
             videos.append(video_data)
 

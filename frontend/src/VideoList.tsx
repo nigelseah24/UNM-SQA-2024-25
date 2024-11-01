@@ -24,6 +24,7 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
   useEffect(() => {
     const loadVideos = async () => {
       const result = await fetchVideos(query);
+      console.log("Fetched videos:", result); // Log the fetched videos
       setVideos(result);
     };
 
@@ -42,7 +43,7 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) =>{
         publishedAt={video.publishedAt}
         viewCount={video.viewCount}
         duration={video.duration}
-        onClick={() => onVideoSelect(video.videoId)} />
+        onClick={() => {console.log("Selected videoId in VideoList:", video.videoId); onVideoSelect(video.videoId)}} />
       ))}
     </div>
   );
