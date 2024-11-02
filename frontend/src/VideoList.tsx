@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import VideoCard from "./VideoCard";
 import { fetchVideos } from "./api";
-import './styling/VideoList.css';
+import './styling/App.css';
 
 interface Video {
   title: string;

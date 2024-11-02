@@ -42,3 +42,52 @@
   width: 100%;
   margin: 0 auto;
 }
+
+.video-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(4, auto); /* 4 rows */
+  gap: 10px;
+  margin: 20px auto;
+  max-width: 960px; /* Ensure grid stays centered and within bounds */
+}
+
+.video-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  margin: 1rem;
+  padding: 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.video-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.video-card h3 {
+  font-size: 1rem;
+  margin: 8px 0;
+  padding: 0 8px;
+}
+
+.video-card p {
+  font-size: 0.9rem;
+  color: #555;
+  padding: 0 8px 8px;
+}
+
+.video-card a {
+  display: block;
+  padding: 8px;
+  color: #1e88e5;
+  text-decoration: none;
+}
+
+.video-card:hover {
+  transform: scale(1.02);
+}

@@ -1,6 +1,5 @@
-from http.client import HTTPException
 from typing import List
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -37,7 +36,7 @@ def get_db():
         
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # or use ["*"] to allow all origins during development
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,7 +50,7 @@ def search_youtube(query: str):
     params = {
         'part': 'snippet',
         'q': query,
-        'maxResults': 12,
+        'maxResults': 30,
         'key': YOUTUBE_API_KEY
     }
     
@@ -100,6 +99,25 @@ class KeywordResponse(BaseModel):
     class Config:
         from_attributes = True
 
+### Convert duration format
+def convert_duration(iso_duration: str) -> str:
+    import re
+    
+    # Regex to extract hours, minutes, and seconds
+    pattern = re.compile(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?')
+    matches = pattern.match(iso_duration)
+    
+    hours = int(matches.group(1)) if matches.group(1) else 0
+    minutes = int(matches.group(2)) if matches.group(2) else 0
+    seconds = int(matches.group(3)) if matches.group(3) else 0
+    
+    # Format the duration
+    if hours > 0:
+        return f"{hours}:{minutes:02}:{seconds:02}"
+    else:
+        return f"{minutes}:{seconds:02}"
+
+
 ## API Endpoints
 # 1. Retrieve keywords from database and return them as a list (Requirement 5)
 @app.get("/keywords/", response_model=List[KeywordResponse])
@@ -119,6 +137,8 @@ def get_youtube_videos(query: str):
         print(youtube_response)
         video_ids = [item['id']['videoId'] for item in youtube_response.get('items', []) if 'videoId' in item['id']]
 
+        print(f"Number of videos returned: {len(video_ids)}") # log number of videos returned
+        
         # Ensure only 12 video IDs are retrieved
         video_ids = video_ids[:12]
         
@@ -135,7 +155,7 @@ def get_youtube_videos(query: str):
                 'publishedAt': item['snippet']['publishedAt'],
                 'viewCount': item['statistics']['viewCount'],
                 'likeCount': item['statistics']['likeCount'],
-                'duration': item['contentDetails']['duration'],
+                'duration': convert_duration(item['contentDetails']['duration']),
                 'videoId': item['id']
             }
             videos.append(video_data)
@@ -144,7 +164,7 @@ def get_youtube_videos(query: str):
         return {"items": videos}
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(500, str(e))
 
 
 # 3. Allow user to add new keywords to the database (Requirement 7)
