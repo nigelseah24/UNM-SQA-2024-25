@@ -35,12 +35,22 @@
   position: sticky;
   top: 20px;  /* Adjust top offset as needed */
   height: fit-content;
+  border: 2px solid #ddd;  /* Light gray border */
+  border-radius: 8px;  /* Rounded corners */
+  background-color: #fff;  /* White background */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
+  padding: 1rem;  /* Padding for inner content */
 }
 
 /* Style the player itself */
 .video-player {
   width: 100%;
   margin: 0 auto;
+  border-radius: 4px;  /* Round corners of the video */
+}
+
+.video-player-wrapper:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  /* Darker shadow on hover */
 }
 
 .video-list {
