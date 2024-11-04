@@ -121,8 +121,8 @@ def convert_duration(iso_duration: str) -> str:
 ## API Endpoints
 # 1. Retrieve keywords from database and return them as a list (Requirement 5)
 @app.get("/keywords/", response_model=List[KeywordResponse])
-def read_keywords(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    keywords = db.query(Keyword).offset(skip).limit(limit).all()
+def read_keywords(skip: int = 0, db: Session = Depends(get_db)):
+    keywords = db.query(Keyword).offset(skip).all()
     return keywords
 
 # 2. Call Youtube API to return a list of videos based on the keywords (Requirement 5)
@@ -175,3 +175,14 @@ def create_keyword(keyword: KeywordCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_keyword)
     return db_keyword
+
+# 4. Allow user to delete keywords from the database (Requirement 7)
+@app.delete("/keywords/{keyword_id}")
+def delete_keyword(keyword_id: int, db: Session = Depends(get_db)):
+    keyword = db.query(Keyword).filter(Keyword.id == keyword_id).first()
+    if keyword:
+        db.delete(keyword)
+        db.commit()
+        return {"message": "Keyword deleted successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Keyword not found")

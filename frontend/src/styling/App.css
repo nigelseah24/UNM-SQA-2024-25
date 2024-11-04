@@ -1,22 +1,22 @@
 .App {
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-  
-  .video-card {
-    margin: 1rem;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    text-align: left;
-  }
-  
-  
-  /* .keyword-list, .add-keyword-form {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin-top: 80px;
+}
+
+.video-card {
+  margin: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: left;
+}
+
+/* .keyword-list, .add-keyword-form {
     margin: 1rem;
   } */
-  
-  /* Wrapper for video list and player */
+
+/* Wrapper for video list and player */
 .content-wrapper {
   display: flex;
   justify-content: space-between;
@@ -31,26 +31,26 @@
 
 /* Right column for the video player */
 .video-player-wrapper {
-  flex: 0 0 350px;  /* Set a fixed width for the player */
+  flex: 0 0 350px; /* Set a fixed width for the player */
   position: sticky;
-  top: 20px;  /* Adjust top offset as needed */
+  top: 20px; /* Adjust top offset as needed */
   height: fit-content;
-  border: 2px solid #ddd;  /* Light gray border */
-  border-radius: 8px;  /* Rounded corners */
-  background-color: #fff;  /* White background */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Subtle shadow for depth */
-  padding: 1rem;  /* Padding for inner content */
+  border: 2px solid #ddd; /* Light gray border */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #fff; /* White background */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  padding: 1rem; /* Padding for inner content */
 }
 
 /* Style the player itself */
 .video-player {
   width: 100%;
   margin: 0 auto;
-  border-radius: 4px;  /* Round corners of the video */
+  border-radius: 4px; /* Round corners of the video */
 }
 
 .video-player-wrapper:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);  /* Darker shadow on hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
 }
 
 .video-list {
