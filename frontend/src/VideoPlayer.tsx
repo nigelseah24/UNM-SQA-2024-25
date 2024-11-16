@@ -41,13 +41,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
   return (
     <div>
       <ReactPlayer
+      className = "video-player"
         url={`https://www.youtube.com/embed/${videoId}`}
         playing
         controls
         onProgress={({ playedSeconds }) => setPlayedSeconds(playedSeconds)}
         onSeek={(seconds) => console.log(`Seeked to ${seconds} seconds`)}
       />
-      <p>Played seconds: {playedSeconds}</p>
+      <p className="played-seconds">Played seconds: {playedSeconds}</p>
     </div>
   );
 };

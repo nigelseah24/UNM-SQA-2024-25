@@ -1,4 +1,4 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { Builder, By, until, Key} = require("selenium-webdriver");
 
 async function testYouTubeVideoCollectionApp() {
   let driver = await new Builder().forBrowser("chrome").build();
@@ -7,12 +7,17 @@ async function testYouTubeVideoCollectionApp() {
     // Navigate to your application
     await driver.get("http://localhost:3000"); // Replace with your app's URL
 
+  
+    //Requirement 1
     // Wait for the page to load and ensure that video cards are visible
     let videoCards = await driver.wait(
       until.elementsLocated(By.css(".video-card")),
       10000
     );
 
+
+
+    //Requirement 2
     // Verify that there are 12 video cards displayed
     if (videoCards.length === 12) {
       console.log("Test passed: 12 video cards found");
@@ -23,6 +28,10 @@ async function testYouTubeVideoCollectionApp() {
       return;
     }
 
+
+
+
+    //Requirement 3
     // Click on the first video card to check if the video player is displayed
     let firstVideoCard = videoCards[0];
     await firstVideoCard.click();
@@ -41,20 +50,89 @@ async function testYouTubeVideoCollectionApp() {
       return;
     }
 
-    // Now, interact with the video controls (play, pause, stop, etc.)
-    // Wait for play button (you can adapt this to other controls if necessary)
-    let playButton = await driver.wait(
-      until.elementLocated(By.css(".video-player-wrapper .video-player")),
-      10000
-    );
-    await playButton.click(); // Play the video
-    console.log("Test passed: Play button clicked and video started");
 
-    await playButton.click(); //Pause the video
-    console.log("Test passed: Video paused");
 
-    // Add more tests as necessary for pause, stop, forward, etc.
+    //Requirement 4
 
+    //Get initial played seconds
+    let playedTimeElement = await driver.wait(until.elementLocated(By.css(".played-seconds")), 10000);
+
+    //Get initial played seconds
+    let initialPlayedTime = await playedTimeElement.getText();
+    initialPlayedTime = parseFloat(initialPlayedTime.replace("Played seconds: ", ""));
+    console.log("Initial played seconds: ", initialPlayedTime);
+
+    //Wait for 2 seconds to allow playback progress
+    await driver.sleep(2000);
+
+    //Get the updated played seconds
+    let updatedPlayedTime = await playedTimeElement.getText();
+    updatedPlayedTime = parseFloat(updatedPlayedTime.replace("Played seconds: ", ""));
+    console.log("Updated played seconds: ", updatedPlayedTime);
+
+    //Validate that playback progressed
+    if (updatedPlayedTime > initialPlayedTime) {
+      console.log("Test passed: Video is playing");
+    } else {
+      console.log("Test failed: Video is not playing");
+    }
+
+    //Verifying if forward and backward functionality work
+
+    await videoPlayer.click(); // Ensure focus on the player
+
+    // Simulate pressing the right arrow key to move forward
+    await driver
+    .actions()
+    .sendKeys(Key.ARROW_RIGHT)
+    .perform();
+
+    // Wait briefly to allow the player to update the played time
+    await driver.sleep(1000);
+
+  // Get played time after moving forward
+  let forwardPlayedTimeElement = await driver.wait(
+  until.elementLocated(By.css(".played-seconds")),
+  10000
+  );
+  let forwardPlayedTimeText = await forwardPlayedTimeElement.getText();
+  let forwardPlayedTime = parseFloat(forwardPlayedTimeText.replace("Played seconds: ", ""));
+  console.log("Forward played seconds: ", forwardPlayedTime);
+
+  // Validate forward navigation
+  if (forwardPlayedTime > updatedPlayedTime) {
+  console.log("Test passed: Right arrow key moves video forward");
+  } else {
+  console.log("Test failed: Right arrow key did not move video forward");
+  }
+
+  // Simulate pressing the left arrow key to move backward
+  await driver
+  .actions()
+  .sendKeys(Key.ARROW_LEFT)
+  .perform();
+
+  // Wait briefly to allow the player to update the played time
+  await driver.sleep(1000);
+
+  // Get played time after moving backward
+  let backwardPlayedTimeElement = await driver.wait(
+  until.elementLocated(By.css(".played-seconds")),
+  10000
+  );
+  let backwardPlayedTimeText = await backwardPlayedTimeElement.getText();
+  let backwardPlayedTime = parseFloat(backwardPlayedTimeText.replace("Played seconds: ", ""));
+  console.log("Backward played seconds: ", backwardPlayedTime);
+
+  // Validate backward navigation
+  if (backwardPlayedTime < forwardPlayedTime && backwardPlayedTime >= 0) {
+  console.log("Test passed: Left arrow key moves video backward");
+  } else {
+  console.log("Test failed: Left arrow key did not move video backward");
+  }
+
+
+    //Requirement 5
     //Check if keywords are displayed
     await driver.wait(until.elementsLocated(By.css(".keyword-list")), 15000);
 
