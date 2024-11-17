@@ -171,6 +171,46 @@ async function testYouTubeVideoCollectionApp() {
       console.log("Test failed: Not all initial keywords are displayed");
       console.log(displayedKeywords);
     }
+
+    //Testing if video list is updated after selecting keyword
+
+    console.log("\nVerifying keyword updates...");
+
+    let initialVideoCount = videoCards.length;
+
+    let keywordButton = await driver.findElement(
+      By.xpath("//button[contains(text(), 'AI')]")
+    );
+    await keywordButton.click();
+    console.log("Keyword 'AI' clicked.");
+
+    await driver.sleep(2000);
+
+    // Refresh videoCards after the DOM update
+    videoCards = await driver.findElements(By.css(".video-card")); // Re-fetch video cards
+    let updatedVideoCount = videoCards.length;    
+    console.log("Updated video count after selecting 'AI':", updatedVideoCount);
+
+    if (updatedVideoCount !== initialVideoCount) {
+      console.log("Test passed: Video collection updated upon keyword selection");
+    } else {
+      console.log("Test failed: Video collection did not update upon keyword selection");
+    }
+
+    //Testing if video list is updated after deselecting keyword
+
+    let revertedVideoCards = await driver.findElements(By.css(".video-card"));
+    let revertedVideoCount = revertedVideoCards.length;
+    console.log("Reverted video count after deselecting 'AI':", revertedVideoCount);
+
+    if (revertedVideoCount === initialVideoCount) {
+      console.log("Test passed: Video collection reverted upon keyword deselection");
+    } else {
+      console.log("Test failed: Video collection did not revert upon keyword deselection");
+    }
+
+
+
   } catch (error) {
     console.log("An error occurred:", error);
   } finally {
