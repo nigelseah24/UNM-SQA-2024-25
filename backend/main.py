@@ -79,6 +79,21 @@ def get_video_data(video_ids: List[str]):
     
     return response.json()
 
+def get_single_video_data(video_id: str):
+    params = {
+        'part': 'snippet,statistics,contentDetails',
+        'id': video_id,
+        'key': YOUTUBE_API_KEY
+    }
+    
+    response = requests.get(youtube_video_data_endpoint, params=params)
+    
+    # Check for API errors
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail="Error fetching data from YouTube API")
+    
+    return response.json()
+
 ### Keywords API
 # Keyword table in the database
 class Keyword(Base):
@@ -166,6 +181,34 @@ def get_youtube_videos(query: str):
     except Exception as e:
         raise HTTPException(500, str(e))
 
+@app.get("/get_video_data_single/")
+def get_video_data_single(video_id: str):
+    """
+    Fetch YouTube video data based on a video ID and return the results.
+    """
+    try:
+        # Call the get_single_video_data function with the video ID
+        video_data_response = get_single_video_data(video_id)
+        
+        videos = []
+        for item in video_data_response.get('items', []):
+            video_data = {
+                'title': item['snippet']['title'],
+                'description': item['snippet']['description'],
+                'thumbnail': item['snippet']['thumbnails']['high']['url'],
+                'channelTitle': item['snippet']['channelTitle'],
+                'publishedAt': item['snippet']['publishedAt'],
+                'viewCount': item['statistics']['viewCount'],
+                'likeCount': item['statistics']['likeCount'],
+                'duration': convert_duration(item['contentDetails']['duration']),
+                'videoId': item['id']
+            }
+            videos.append(video_data)
+
+        return {"items": videos}
+    
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 # 3. Allow user to add new keywords to the database (Requirement 7)
 @app.post("/keywords/", response_model=KeywordResponse)

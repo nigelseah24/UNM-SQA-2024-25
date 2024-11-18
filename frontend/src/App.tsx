@@ -46,7 +46,9 @@ const App: React.FC = () => {
         <div className="video-list-wrapper">
           <VideoList
             query={query}
-            onVideoSelect={(videoId) => setSelectedVideoId(videoId)}
+            onVideoSelect={(videoId) => {
+              setSelectedVideoId(videoId);
+            }}
           />
         </div>
         <div className="video-player-wrapper">
