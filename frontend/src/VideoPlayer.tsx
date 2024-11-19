@@ -49,23 +49,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
         onProgress={({ playedSeconds }) => setPlayedSeconds(playedSeconds)}
         onSeek={(seconds) => console.log(`Seeked to ${seconds} seconds`)}
       />
+
       <div className="video-player-content">
         <h1>{title}</h1>
-        <p>
-          <strong>Channel:</strong> {channelTitle}
-        </p>
-        <p>
-          <strong>Published At:</strong> {publishedAt}
-        </p>
-        <p>
-          <strong>View Count:</strong> {viewCount}
-        </p>
-        <p>
-          <strong>Duration:</strong> {duration}
-        </p>
-        <p>
-          <strong>Like Count:</strong> {likeCount}
-        </p>
+        <p className="channel-title">Channel: {channelTitle}</p>
+        <p className="published-at">Published At: {publishedAt}</p>
+        <p className="view-count">View Count: {viewCount}</p>
+        <p className="duration">Duration: {duration}</p>
+        <p className="like-count">Like Count: {likeCount}</p>
+        <p className="played-seconds">Played seconds: {playedSeconds}</p>
       </div>
     </div>
   );
