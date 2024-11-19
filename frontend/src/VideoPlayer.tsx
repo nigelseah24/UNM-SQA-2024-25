@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactPlayer from "react-player";
 import { getVideoDetails } from "./api";
 
@@ -7,6 +7,7 @@ interface VideoPlayerProps {
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
+  const playerRef = useRef<ReactPlayer>(null); // Reference to the ReactPlayer instance
   const [playedSeconds, setPlayedSeconds] = useState(0);
   const [title, setTitle] = useState("");
   const [channelTitle, setChannelTitle] = useState("");
@@ -30,25 +31,54 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoId }) => {
 
         // Debugging logs
         console.log("Video Details:", videoDetails);
-        console.log("Channel Title:", video.channelTitle);
-        console.log("Published At:", video.publishedAt);
-        console.log("View Count:", video.viewCount);
-        console.log("Duration:", video.duration);
-        console.log("Like Count:", video.likeCount);
       });
     }
   }, [videoId]);
 
+  // Handlers for custom controls
+  const handlePlay = () => {
+    playerRef.current?.getInternalPlayer()?.playVideo(); // Play video
+  };
+
+  const handlePause = () => {
+    playerRef.current?.getInternalPlayer()?.pauseVideo(); // Pause video
+  };
+
+  const handleSkipForward = () => {
+    const currentTime = playerRef.current?.getCurrentTime() || 0;
+    playerRef.current?.seekTo(currentTime + 5); // Skip forward 5 seconds
+  };
+
+  const handleSkipBackward = () => {
+    const currentTime = playerRef.current?.getCurrentTime() || 0;
+    playerRef.current?.seekTo(Math.max(currentTime - 5, 0)); // Skip backward 5 seconds
+  };
+
   return (
     <div>
       <ReactPlayer
+        ref={playerRef}
         className="video-player"
         url={`https://www.youtube.com/embed/${videoId}`}
         playing
-        controls
+        controls={true} // Disable built-in controls
         onProgress={({ playedSeconds }) => setPlayedSeconds(playedSeconds)}
-        onSeek={(seconds) => console.log(`Seeked to ${seconds} seconds`)}
       />
+      {/* Custom controls */}
+      <div className="video-controls">
+        <button className="play-button" onClick={handlePlay}>
+          Play
+        </button>
+        <button className="pause-button" onClick={handlePause}>
+          Pause
+        </button>
+        <button className="rewind-button" onClick={handleSkipBackward}>
+          Rewind 5s
+        </button>
+        <button className="forward-button" onClick={handleSkipForward}>
+          Forward 5s
+        </button>
+      </div>
 
       <div className="video-player-content">
         <h1>{title}</h1>
