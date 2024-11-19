@@ -21,16 +21,28 @@ interface VideoListProps {
 
 const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) => {
   const [videos, setVideos] = useState<Video[]>([]);
+  const [videoIdList, setVideoIdList] = useState<string[]>([]);
   const [sortCriteria, setSortCriteria] = useState<string>("publishedAt");
 
   useEffect(() => {
     const loadVideos = async () => {
-      if (!query) {
-        return;
+      if (!query) return;
+
+      try {
+        const result = await fetchVideos(query);
+        console.log("Fetched videos:", result); // Log the fetched videos
+
+        setVideos(result); // Update the videos state
+
+        // Extract video IDs and update videoIdList state
+        const videoIds = result.map((video: Video) => video.videoId);
+        setVideoIdList(videoIds);
+
+        // Log video IDs after they are processed
+        console.log("Video ID List:", videoIds);
+      } catch (error) {
+        console.error("Error fetching videos:", error);
       }
-      const result = await fetchVideos(query);
-      console.log("Fetched videos:", result); // Log the fetched videos
-      setVideos(result);
     };
 
     loadVideos();
@@ -103,6 +115,9 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) => {
           />
         ))}
       </div>
+      <p style={{ color: "white" }} className="video-id-list">
+        {videoIdList}
+      </p>
     </div>
   );
 };
