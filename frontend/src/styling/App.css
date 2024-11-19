@@ -49,6 +49,13 @@
   border-radius: 4px; /* Round corners of the video */
 }
 
+.video-controls {
+  display: flex;
+  padding: 0.5rem;
+  align-items: left;
+  margin-top: 1rem;
+}
+
 .video-player-wrapper:hover {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
 }
