@@ -145,7 +145,8 @@ async function verifyKeywordDisplay(driver) {
 }
 
 async function verifyKeywordSelection(driver, videoCards) {
-  const initialVideoCount = videoCards.length;
+  let initialVideoList = await driver.findElement(By.css("p.video-id-list"));
+  let initialVideoListText = await initialVideoList.getText();
 
   let keywordButton = await driver.findElement(
     By.xpath("//button[contains(text(), 'AI')]")
@@ -155,11 +156,34 @@ async function verifyKeywordSelection(driver, videoCards) {
 
   await driver.sleep(2000);
 
-  videoCards = await driver.findElements(By.css(".video-card"));
-  let updatedVideoCount = videoCards.length;
-  console.log("Updated video count after selecting 'AI':", updatedVideoCount);
+  let deSelectedVideoList = await driver.findElement(By.css("p.video-id-list"));
+  let deSelectedVideoListText = await deSelectedVideoList.getText();
 
-  if (updatedVideoCount !== initialVideoCount) {
+  videoCards = await driver.findElements(By.css(".video-card"));
+
+  if (initialVideoListText !== deSelectedVideoListText) {
+    console.log(
+      "Test passed: Video collection updated upon keyword deselection"
+    );
+  } else {
+    console.log(
+      "Test failed: Video collection did not update upon keyword deselection"
+    );
+    throw new Error("Keyword deselection did not update videos");
+  }
+
+  await keywordButton.click();
+  console.log("AI button clicked to reselect");
+
+  await driver.sleep(2000);
+
+  let selectedVideoList = await driver.findElement(By.css("p.video-id-list"));
+  let selectedVideoListText = await selectedVideoList.getText();
+  //console.log("initialVideoListText:", initialVideoListText);
+  //console.log("deSelectedVideoListText: ", deSelectedVideoListText);
+  //console.log("selectedVideoListText: ", selectedVideoListText);
+
+  if (deSelectedVideoListText !== selectedVideoListText) {
     console.log(
       "Test passed: Video collection updated upon keyword selection"
     );
@@ -168,20 +192,6 @@ async function verifyKeywordSelection(driver, videoCards) {
       "Test failed: Video collection did not update upon keyword selection"
     );
     throw new Error("Keyword selection did not update videos");
-  }
-
-  let revertedVideoCards = await driver.findElements(By.css(".video-card"));
-  let revertedVideoCount = revertedVideoCards.length;
-
-  if (revertedVideoCount === initialVideoCount) {
-    console.log(
-      "Test passed: Video collection reverted upon keyword deselection"
-    );
-  } else {
-    console.log(
-      "Test failed: Video collection did not revert upon keyword deselection"
-    );
-    throw new Error("Keyword deselection did not revert videos");
   }
 }
 
