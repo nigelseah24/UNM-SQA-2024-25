@@ -179,9 +179,9 @@ async function verifyKeywordSelection(driver, videoCards) {
 
   let selectedVideoList = await driver.findElement(By.css("p.video-id-list"));
   let selectedVideoListText = await selectedVideoList.getText();
-  console.log("initialVideoListText:", initialVideoListText);
-  console.log("deSelectedVideoListText: ", deSelectedVideoListText);
-  console.log("selectedVideoListText: ", selectedVideoListText);
+  //console.log("initialVideoListText:", initialVideoListText);
+  //console.log("deSelectedVideoListText: ", deSelectedVideoListText);
+  //console.log("selectedVideoListText: ", selectedVideoListText);
 
   if (deSelectedVideoListText !== selectedVideoListText) {
     console.log(
