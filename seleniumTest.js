@@ -179,9 +179,9 @@ async function verifyKeywordSelection(driver, videoCards) {
 
   let selectedVideoList = await driver.findElement(By.css("p.video-id-list"));
   let selectedVideoListText = await selectedVideoList.getText();
-  //console.log("initialVideoListText:", initialVideoListText);
-  //console.log("deSelectedVideoListText: ", deSelectedVideoListText);
-  //console.log("selectedVideoListText: ", selectedVideoListText);
+  console.log("initialVideoListText:", initialVideoListText);
+  console.log("deSelectedVideoListText: ", deSelectedVideoListText);
+  console.log("selectedVideoListText: ", selectedVideoListText);
 
   if (deSelectedVideoListText !== selectedVideoListText) {
     console.log(
@@ -191,7 +191,38 @@ async function verifyKeywordSelection(driver, videoCards) {
     console.log(
       "Test failed: Video collection did not update upon keyword selection"
     );
-    throw new Error("Keyword selection did not update videos");
+  }
+}
+
+async function verifyKeywordAddition(driver){
+  //Locating input field for adding a new keyword
+  let addKeywordInput = await driver.wait(until.elementLocated(By.css(".add-keyword-form input")), 10000);
+
+  //Locating button to add keyword
+  let addKeywordButton = await driver.wait(until.elementLocated(By.css(".add-keyword-form button")), 10000);
+
+  //New keyword to add
+  const newKeyword = "ChatGPT";
+
+  //Adding new keyword
+  await addKeywordInput.sendKeys(newKeyword);
+  await addKeywordButton.click();
+
+  await driver.sleep(2000);
+
+  //Check if new keyword appears in keyword list
+  let keywordButtons = await driver.wait(until.elementsLocated(By.css(".keyword-list button")), 10000);
+
+  let keywordTexts = [];
+  for (let button of keywordButtons) {
+    keywordTexts.push(await button.getText());
+  }
+
+  if (keywordTexts.includes(newKeyword)) {
+    console.log(`Test passed: "${newKeyword}" added to keywords`);
+  } else {
+    console.log(`Test failed: "${newKeyword}" not found in keywords`);
+    throw new Error (`Keyword "${newKeyword}" was not added successfully`);
   }
 }
 
@@ -209,6 +240,7 @@ async function main() {
 
     await verifyKeywordDisplay(driver);
     await verifyKeywordSelection(driver, videoCards);
+    await verifyKeywordAddition(driver);
   } catch (error) {
     console.error("Test execution failed:", error);
   } finally {
