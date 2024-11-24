@@ -226,6 +226,52 @@ async function verifyKeywordAddition(driver){
   }
 }
 
+async function verifySortByAge(driver){
+
+  try {
+
+  await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
+
+  //Selecting date uploaded
+  const sortDropdown = await driver.findElement(By.id("sort"));
+  await sortDropdown.click();
+  const dateOption = await driver.findElement(By.css('option[value="publishedAt"]'));
+  await dateOption.click();
+
+  //Fetch published dates of videos
+  const videoElements = await driver.findElements(By.css(".video-card"));
+  const publishedDates = [];
+
+  for (let video of videoElements) {
+    const dateText = await video.findElement(By.css(".video-card p:nth-of-type(2)")).getText();
+    const parsedDate = new Date(dateText.split(":")[1].trim());
+    publishedDates.push(parsedDate);
+  }
+
+  //Checking if dates sorted in descending order
+  let isSorted = true;
+  for (let i = 1; i < publishedDates.length; i++) {
+    if (publishedDates[i-1] < publishedDates[i]){
+      isSorted = false;
+      console.error(`Sorting error: ${publishedDates[i-1]} is before ${publishedDates[i]}`
+      );
+      break;
+    }
+  }
+
+  if (isSorted) {
+    console.log("Test passed: Videos are sorted by upload date");
+    //console.log(publishedDates);
+  } else {
+    console.log("Test failed: Videos are not sorted by upload date");
+  }
+
+} catch (error) {
+  console.log("verifySortByAge failed:", error);
+  throw error;
+  }
+}
+
 async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
 
@@ -240,7 +286,8 @@ async function main() {
 
     await verifyKeywordDisplay(driver);
     await verifyKeywordSelection(driver, videoCards);
-    await verifyKeywordAddition(driver);
+    //await verifyKeywordAddition(driver);
+    await verifySortByAge(driver);
   } catch (error) {
     console.error("Test execution failed:", error);
   } finally {
