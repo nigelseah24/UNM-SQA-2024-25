@@ -272,6 +272,96 @@ async function verifySortByAge(driver){
   }
 }
 
+async function verifySortByDuration(driver) {
+  try {
+    await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
+
+    //Selecting duration
+    const sortDropdown = await driver.findElement(By.id("sort"));
+    await sortDropdown.click();
+    const durationOption = await driver.findElement(By.css('option[value="duration"]'));
+    await durationOption.click();
+
+    //Fetch durations of videos
+    const videoElements = await driver.findElements(By.css(".video-card"));
+    const durations = [];
+
+    for (let video of videoElements) {
+      const durationText = await video.findElement(By.css(".video-card p:nth-of-type(4)")).getText();
+      const durationParts = durationText.split(":")[1].trim().split(":");
+      const totalSeconds = durationParts.length===3
+      ? parseInt(durationParts[0] * 3600 + parseInt(durationParts[1]) * 60 + parseInt(durationParts[2]))
+      : parseInt(durationParts[0] * 60 + parseInt(durationParts[1])); //Handling MM:SS format
+    }
+
+    //console.log(durations);
+
+    //Check if sorted properly
+    let isSorted = true;
+    for (let i = 1; i < durations.length; i++) {
+      if (durations[i-1] < durations[i]) {
+        isSorted = false;
+        console.error(`Sorting error: ${durations[i-1]} is less than ${durations[i]}`);
+        break;
+      }
+    }
+
+    if (isSorted) {
+      console.log("Test passed: Videos are sorted by duration");
+    } else {
+      console.log("Test failed: Videos are not sorted by duration");
+    }
+  }
+  catch (error) {
+    console.error("verifysortByDuration failed:", error);
+    throw error;
+  }
+}
+
+async function verifySortByLikes(driver){
+  try {
+    await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
+
+    //Selecting Likes from dropdown
+    const sortDropdown = await driver.findElement(By.id("sort"));
+    await sortDropdown.click();
+    const likesOption = await driver.findElement(By.css('option[value="likeCount"]'));
+    await likesOption.click();
+
+    //Fetch likes of videos
+    const videoElements = await driver.findElements(By.css(".video-card"));
+    const likes = [];
+
+    for (let video of videoElements) {
+      const likesText = await video.findElement(By.css(".video-card p:nth-of-type(5)")).getText();
+
+      const likesCount = parseInt(likesText.split(":")[1].trim().replace(/,/g,"")); //Get numeric part and remove commas
+      //console.log(likesCount);
+      likes.push(likesCount);
+    }
+
+    //Check if likes are sorted properly
+    let isSorted = true;
+    for (let i = 1; i < likes.length; i++) {
+      if (likes[i-1] < likes[i]) {
+        isSorted = false;
+        console.error(`Sorting error: ${likes[i-1]} is less than ${likes[i]}`);
+        break;
+      }
+    }
+
+    if (isSorted) {
+      console.log("Test passed: Videos are sorted by likes");
+    } else {
+      console.log("Test failed: Videos are not sorted by likes");
+    }
+  }
+  catch (error) {
+    console.error("verifySortByLikes failed: ", error);
+    throw error;
+  }
+}
+
 async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
 
@@ -288,6 +378,8 @@ async function main() {
     await verifyKeywordSelection(driver, videoCards);
     //await verifyKeywordAddition(driver);
     await verifySortByAge(driver);
+    await verifySortByDuration(driver);
+    await verifySortByLikes(driver);
   } catch (error) {
     console.error("Test execution failed:", error);
   } finally {
