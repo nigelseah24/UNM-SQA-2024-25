@@ -31,7 +31,7 @@ async function verifyVideoPlayerVisibility(driver, videoCards) {
   );
 
   if (videoPlayer) {
-    console.log("Test passed: Video player is visible");
+    console.log("Test passed: Video player is visible after click");
   } else {
     console.log("Test failed: Video player not visible after click");
     throw new Error("Video player is not visible");
@@ -184,9 +184,7 @@ async function verifyKeywordSelection(driver, videoCards) {
   //console.log("selectedVideoListText: ", selectedVideoListText);
 
   if (deSelectedVideoListText !== selectedVideoListText) {
-    console.log(
-      "Test passed: Video collection updated upon keyword selection"
-    );
+    console.log("Test passed: Video collection updated upon keyword selection");
   } else {
     console.log(
       "Test failed: Video collection did not update upon keyword selection"
@@ -194,12 +192,18 @@ async function verifyKeywordSelection(driver, videoCards) {
   }
 }
 
-async function verifyKeywordAddition(driver){
+async function verifyKeywordAddition(driver) {
   //Locating input field for adding a new keyword
-  let addKeywordInput = await driver.wait(until.elementLocated(By.css(".add-keyword-form input")), 10000);
+  let addKeywordInput = await driver.wait(
+    until.elementLocated(By.css(".add-keyword-form input")),
+    10000
+  );
 
   //Locating button to add keyword
-  let addKeywordButton = await driver.wait(until.elementLocated(By.css(".add-keyword-form button")), 10000);
+  let addKeywordButton = await driver.wait(
+    until.elementLocated(By.css(".add-keyword-form button")),
+    10000
+  );
 
   //New keyword to add
   const newKeyword = "ChatGPT";
@@ -211,7 +215,10 @@ async function verifyKeywordAddition(driver){
   await driver.sleep(2000);
 
   //Check if new keyword appears in keyword list
-  let keywordButtons = await driver.wait(until.elementsLocated(By.css(".keyword-list button")), 10000);
+  let keywordButtons = await driver.wait(
+    until.elementsLocated(By.css(".keyword-list button")),
+    10000
+  );
 
   let keywordTexts = [];
   for (let button of keywordButtons) {
@@ -222,53 +229,57 @@ async function verifyKeywordAddition(driver){
     console.log(`Test passed: "${newKeyword}" added to keywords`);
   } else {
     console.log(`Test failed: "${newKeyword}" not found in keywords`);
-    throw new Error (`Keyword "${newKeyword}" was not added successfully`);
+    throw new Error(`Keyword "${newKeyword}" was not added successfully`);
   }
 }
 
-async function verifySortByAge(driver){
-
+async function verifySortByAge(driver) {
   try {
+    await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
-  await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
+    //Selecting date uploaded
+    const sortDropdown = await driver.findElement(By.id("sort"));
+    await sortDropdown.click();
+    const dateOption = await driver.findElement(
+      By.css('option[value="publishedAt"]')
+    );
+    await dateOption.click();
 
-  //Selecting date uploaded
-  const sortDropdown = await driver.findElement(By.id("sort"));
-  await sortDropdown.click();
-  const dateOption = await driver.findElement(By.css('option[value="publishedAt"]'));
-  await dateOption.click();
+    //Fetch published dates of videos
+    const videoElements = await driver.findElements(By.css(".video-card"));
+    const publishedDates = [];
 
-  //Fetch published dates of videos
-  const videoElements = await driver.findElements(By.css(".video-card"));
-  const publishedDates = [];
-
-  for (let video of videoElements) {
-    const dateText = await video.findElement(By.css(".video-card p:nth-of-type(2)")).getText();
-    const parsedDate = new Date(dateText.split(":")[1].trim());
-    publishedDates.push(parsedDate);
-  }
-
-  //Checking if dates sorted in descending order
-  let isSorted = true;
-  for (let i = 1; i < publishedDates.length; i++) {
-    if (publishedDates[i-1] < publishedDates[i]){
-      isSorted = false;
-      console.error(`Sorting error: ${publishedDates[i-1]} is before ${publishedDates[i]}`
-      );
-      break;
+    for (let video of videoElements) {
+      const dateText = await video
+        .findElement(By.css(".video-card p:nth-of-type(2)"))
+        .getText();
+      const parsedDate = new Date(dateText.split(":")[1].trim());
+      publishedDates.push(parsedDate);
     }
-  }
 
-  if (isSorted) {
-    console.log("Test passed: Videos are sorted by upload date");
-    //console.log(publishedDates);
-  } else {
-    console.log("Test failed: Videos are not sorted by upload date");
-  }
+    //Checking if dates sorted in descending order
+    let isSorted = true;
+    for (let i = 1; i < publishedDates.length; i++) {
+      if (publishedDates[i - 1] < publishedDates[i]) {
+        isSorted = false;
+        console.error(
+          `Sorting error: ${publishedDates[i - 1]} is before ${
+            publishedDates[i]
+          }`
+        );
+        break;
+      }
+    }
 
-} catch (error) {
-  console.log("verifySortByAge failed:", error);
-  throw error;
+    if (isSorted) {
+      console.log("Test passed: Videos are sorted by upload date");
+      //console.log(publishedDates);
+    } else {
+      console.log("Test failed: Videos are not sorted by upload date");
+    }
+  } catch (error) {
+    console.log("verifySortByAge failed:", error);
+    throw error;
   }
 }
 
@@ -279,7 +290,9 @@ async function verifySortByDuration(driver) {
     //Selecting duration
     const sortDropdown = await driver.findElement(By.id("sort"));
     await sortDropdown.click();
-    const durationOption = await driver.findElement(By.css('option[value="duration"]'));
+    const durationOption = await driver.findElement(
+      By.css('option[value="duration"]')
+    );
     await durationOption.click();
 
     //Fetch durations of videos
@@ -287,11 +300,18 @@ async function verifySortByDuration(driver) {
     const durations = [];
 
     for (let video of videoElements) {
-      const durationText = await video.findElement(By.css(".video-card p:nth-of-type(4)")).getText();
+      const durationText = await video
+        .findElement(By.css(".video-card p:nth-of-type(4)"))
+        .getText();
       const durationParts = durationText.split(":")[1].trim().split(":");
-      const totalSeconds = durationParts.length===3
-      ? parseInt(durationParts[0] * 3600 + parseInt(durationParts[1]) * 60 + parseInt(durationParts[2]))
-      : parseInt(durationParts[0] * 60 + parseInt(durationParts[1])); //Handling MM:SS format
+      const totalSeconds =
+        durationParts.length === 3
+          ? parseInt(
+              durationParts[0] * 3600 +
+                parseInt(durationParts[1]) * 60 +
+                parseInt(durationParts[2])
+            )
+          : parseInt(durationParts[0] * 60 + parseInt(durationParts[1])); //Handling MM:SS format
     }
 
     //console.log(durations);
@@ -299,9 +319,11 @@ async function verifySortByDuration(driver) {
     //Check if sorted properly
     let isSorted = true;
     for (let i = 1; i < durations.length; i++) {
-      if (durations[i-1] < durations[i]) {
+      if (durations[i - 1] < durations[i]) {
         isSorted = false;
-        console.error(`Sorting error: ${durations[i-1]} is less than ${durations[i]}`);
+        console.error(
+          `Sorting error: ${durations[i - 1]} is less than ${durations[i]}`
+        );
         break;
       }
     }
@@ -311,21 +333,22 @@ async function verifySortByDuration(driver) {
     } else {
       console.log("Test failed: Videos are not sorted by duration");
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error("verifysortByDuration failed:", error);
     throw error;
   }
 }
 
-async function verifySortByLikes(driver){
+async function verifySortByLikes(driver) {
   try {
     await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
     //Selecting Likes from dropdown
     const sortDropdown = await driver.findElement(By.id("sort"));
     await sortDropdown.click();
-    const likesOption = await driver.findElement(By.css('option[value="likeCount"]'));
+    const likesOption = await driver.findElement(
+      By.css('option[value="likeCount"]')
+    );
     await likesOption.click();
 
     //Fetch likes of videos
@@ -333,9 +356,13 @@ async function verifySortByLikes(driver){
     const likes = [];
 
     for (let video of videoElements) {
-      const likesText = await video.findElement(By.css(".video-card p:nth-of-type(5)")).getText();
+      const likesText = await video
+        .findElement(By.css(".video-card p:nth-of-type(5)"))
+        .getText();
 
-      const likesCount = parseInt(likesText.split(":")[1].trim().replace(/,/g,"")); //Get numeric part and remove commas
+      const likesCount = parseInt(
+        likesText.split(":")[1].trim().replace(/,/g, "")
+      ); //Get numeric part and remove commas
       //console.log(likesCount);
       likes.push(likesCount);
     }
@@ -343,9 +370,11 @@ async function verifySortByLikes(driver){
     //Check if likes are sorted properly
     let isSorted = true;
     for (let i = 1; i < likes.length; i++) {
-      if (likes[i-1] < likes[i]) {
+      if (likes[i - 1] < likes[i]) {
         isSorted = false;
-        console.error(`Sorting error: ${likes[i-1]} is less than ${likes[i]}`);
+        console.error(
+          `Sorting error: ${likes[i - 1]} is less than ${likes[i]}`
+        );
         break;
       }
     }
@@ -355,8 +384,7 @@ async function verifySortByLikes(driver){
     } else {
       console.log("Test failed: Videos are not sorted by likes");
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error("verifySortByLikes failed: ", error);
     throw error;
   }
@@ -368,15 +396,30 @@ async function main() {
   try {
     await navigateToApplication(driver);
 
+    // Requirement 1
+
+    // Requirement 2
     let videoCards = await verifyVideoCardsCount(driver);
+
+    // Requirement 3 (Part 1)
+
+    // Requirement 3 (Part 2)
     let videoPlayer = await verifyVideoPlayerVisibility(driver, videoCards);
 
+    // Requirement 4
     let { updatedPlayedTime } = await verifyVideoPlayback(driver);
     await verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime);
 
+    // Requirement 5 (Part 1) & Requirement 6
     await verifyKeywordDisplay(driver);
+
+    // Requirement 5 (Part 2)
     await verifyKeywordSelection(driver, videoCards);
+
+    // Requirement 7
     //await verifyKeywordAddition(driver);
+
+    // Requirement 8
     await verifySortByAge(driver);
     await verifySortByDuration(driver);
     await verifySortByLikes(driver);
