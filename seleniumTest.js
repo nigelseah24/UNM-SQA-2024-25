@@ -390,6 +390,56 @@ async function verifySortByLikes(driver) {
   }
 }
 
+async function verifyYouTubePlayerPlayPause(driver) {
+  try {
+    // Wait for the iframe containing the YouTube player
+    const iframe = await driver.wait(
+      until.elementLocated(By.css("iframe")),
+      10000
+    );
+    console.log("YouTube iframe located");
+
+    // Switch context to the iframe
+    await driver.switchTo().frame(iframe);
+
+    // Locate the play button in the YouTube player
+    const playButton = await driver.wait(
+      until.elementLocated(By.css("button.ytp-play-button")), // YouTube play button selector
+      5000
+    );
+
+    // Allow playback to proceed
+    await driver.sleep(3000);
+
+    // Verify playback by checking if the player shows a "Pause" state
+    const isPlaying = await playButton.getAttribute("data-title-no-tooltip");
+    if (isPlaying.includes("Pause")) {
+      console.log("Test passed: Video is playing in YouTube player");
+    } else {
+      throw new Error("Test failed: Video did not start playing");
+    }
+
+    // Click Pause Button
+    await playButton.click();
+    console.log("Clicked Pause button in YouTube player");
+
+    // Verify paused state
+    const isPaused = await playButton.getAttribute("data-title-no-tooltip");
+    if (isPaused.includes("Play")) {
+      console.log("Test passed: Video is paused in YouTube player");
+    } else {
+      throw new Error("Test failed: Video did not pause");
+    }
+
+    // Switch back to the main application context
+    await driver.switchTo().defaultContent();
+  } catch (error) {
+    console.error("YouTube player Play/Pause test failed:", error);
+    throw error;
+  }
+}
+
+
 async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
 
@@ -407,6 +457,7 @@ async function main() {
     let videoPlayer = await verifyVideoPlayerVisibility(driver, videoCards);
 
     // Requirement 4
+    await verifyYouTubePlayerPlayPause(driver);
     let { updatedPlayedTime } = await verifyVideoPlayback(driver);
     await verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime);
 
