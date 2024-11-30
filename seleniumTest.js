@@ -4,6 +4,57 @@ async function navigateToApplication(driver) {
   await driver.get("http://localhost:3000"); // Replace with your app's URL
 }
 
+async function verifyDynamicCollectionUpdateOnSearch(driver) {
+  try {
+    // Locate the search input field and search button
+    const searchInput = await driver.wait(
+      until.elementLocated(By.css(".add-keyword-form input")),
+      10000
+    );
+    const searchButton = await driver.wait(
+      until.elementLocated(By.css(".add-keyword-form button")),
+      10000
+    );
+
+    // Define the search keyword and perform the search
+    const searchKeyword = "Technology";
+    await searchInput.clear();
+    await searchInput.sendKeys(searchKeyword);
+    await searchButton.click();
+    console.log(`Search performed with keyword: "${searchKeyword}"`);
+
+    // Wait for video cards to update based on the search keyword
+    await driver.sleep(3000);
+
+    // Fetch the displayed video titles
+    const videoCards = await driver.wait(
+      until.elementsLocated(By.css(".video-card")),
+      10000
+    );
+    const displayedVideoTitles = [];
+    for (let video of videoCards) {
+      const titleElement = await video.findElement(By.css(".video-title"));
+      const titleText = await titleElement.getText();
+      displayedVideoTitles.push(titleText);
+    }
+
+    console.log("Displayed Video Titles:", displayedVideoTitles);
+
+    // Check if the collection has items (not empty)
+    if (displayedVideoTitles.length > 0) {
+      console.log(
+        `Test passed: Video collection updated with ${displayedVideoTitles.length} items`
+      );
+    } else {
+      console.log("Test failed: Video collection did not update");
+      throw new Error("No videos displayed for the search keyword");
+    }
+  } catch (error) {
+    console.error("Dynamic collection update test failed:", error);
+    throw error;
+  }
+}
+
 async function verifyVideoCardsCount(driver) {
   let videoCards = await driver.wait(
     until.elementsLocated(By.css(".video-card")),
@@ -447,6 +498,7 @@ async function main() {
     await navigateToApplication(driver);
 
     // Requirement 1
+    await verifyDynamicCollectionUpdateOnSearch(driver);
 
     // Requirement 2
     let videoCards = await verifyVideoCardsCount(driver);
