@@ -154,8 +154,8 @@ def get_youtube_videos(query: str):
 
         print(f"Number of videos returned: {len(video_ids)}") # log number of videos returned
         
-        # Ensure only 12 video IDs are retrieved
-        video_ids = video_ids[:12]
+        # Ensure only 20 video IDs are retrieved
+        video_ids = video_ids[:20]
         
         # Call the get_video_data function with the video IDs
         video_data_response = get_video_data(video_ids)

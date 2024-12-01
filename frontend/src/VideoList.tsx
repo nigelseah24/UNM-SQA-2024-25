@@ -79,7 +79,7 @@ const VideoList: React.FC<VideoListProps> = ({ query, onVideoSelect }) => {
     });
   };
 
-  const sortedVideos = sortVideos(videos, sortCriteria);
+  const sortedVideos = sortVideos(videos, sortCriteria).slice(0, 12);
 
   return (
     <div>
