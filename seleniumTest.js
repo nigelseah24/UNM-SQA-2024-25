@@ -519,14 +519,16 @@ async function verifyYouTubePlayerPlayPause(driver) {
 
 async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
+  let keywords =
+    "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation";
 
   try {
     await navigateToApplication(driver);
 
     // Requirement 1
-    verifyDynamicCollectionExists(
+    await verifyDynamicCollectionExists(
       "http://localhost:8000/get_videos",
-      "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation"
+      keywords
     );
     await verifyDynamicCollectionUpdateOnSearch(driver);
 
