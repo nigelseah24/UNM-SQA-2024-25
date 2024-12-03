@@ -136,7 +136,28 @@ async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
   }
 }
 
-async function verifyPreDefinedKeywordDisplay(driver) {
+async function verifyKeywordListExists(driver) {
+  let keywordButtons = await driver.wait(
+    until.elementsLocated(By.css(".keyword-list button")),
+    10000
+  );
+
+  let displayedKeywords = [];
+  for (let button of keywordButtons) {
+    let text = await button.getText();
+    displayedKeywords.push(text);
+  }
+
+  if (displayedKeywords) {
+    console.log("Test passed: There is a keyword list which is displayed");
+  } else {
+    console.log("Test failed: Not all initial keywords are displayed");
+    console.log(displayedKeywords);
+    throw new Error("Keyword display mismatch");
+  }
+}
+
+async function verifyPreDefinedKeywordListExists(driver) {
   let keywordButtons = await driver.wait(
     until.elementsLocated(By.css(".keyword-list button")),
     10000
@@ -339,7 +360,7 @@ async function verifySortByDuration(driver) {
           : parseInt(durationParts[0] * 60 + parseInt(durationParts[1])); //Handling MM:SS format
     }
 
-    //console.log(durations);
+    // console.log(durations);
 
     //Check if sorted properly
     let isSorted = true;
@@ -490,12 +511,13 @@ async function main() {
     await verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime);
 
     // Requirement 5 (Part 1) (Armaan)
+    await verifyKeywordListExists(driver);
 
     // Requirement 5 (Part 2) (Armaan)
     await verifyKeywordSelection(driver, videoCards); // This function has 2 test cases
 
     // Requirement 6 (Armaan)
-    await verifyPreDefinedKeywordDisplay(driver);
+    await verifyPreDefinedKeywordListExists(driver);
 
     // Requirement 7 (Nigel)
     // await verifyKeywordAddition(driver);
