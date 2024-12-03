@@ -24,10 +24,9 @@ async function verifyVideoCardsCount(driver) {
 
 async function test2() {
   let driver = await new Builder().forBrowser("chrome").build();
-  let keywords =
-    "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation";
   try {
     await navigateToApplication(driver);
+
     // Requirement 1 (Yan chang)
     await verifyVideoCardsCount(driver);
   } catch (error) {
