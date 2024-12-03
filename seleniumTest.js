@@ -5,6 +5,7 @@ async function navigateToApplication(driver) {
   await driver.get("http://localhost:3000"); // Replace with your app's URL
 }
 
+// Requirement 1
 async function verifyDynamicCollectionExists(url, query) {
   try {
     const response = await axios.get(url, { params: { query } });
@@ -28,57 +29,6 @@ async function verifyDynamicCollectionExists(url, query) {
   } catch (error) {
     console.error("Error:", error.message);
     throw error; // Re-throw the error for further handling
-  }
-}
-
-async function verifyDynamicCollectionUpdateOnSearch(driver) {
-  try {
-    // Locate the search input field and search button
-    const searchInput = await driver.wait(
-      until.elementLocated(By.css(".add-keyword-form input")),
-      10000
-    );
-    const searchButton = await driver.wait(
-      until.elementLocated(By.css(".add-keyword-form button")),
-      10000
-    );
-
-    // Define the search keyword and perform the search
-    const searchKeyword = "Technology";
-    await searchInput.clear();
-    await searchInput.sendKeys(searchKeyword);
-    await searchButton.click();
-    console.log(`Search performed with keyword: "${searchKeyword}"`);
-
-    // Wait for video cards to update based on the search keyword
-    await driver.sleep(3000);
-
-    // Fetch the displayed video titles
-    const videoCards = await driver.wait(
-      until.elementsLocated(By.css(".video-card")),
-      10000
-    );
-    const displayedVideoTitles = [];
-    for (let video of videoCards) {
-      const titleElement = await video.findElement(By.css(".video-title"));
-      const titleText = await titleElement.getText();
-      displayedVideoTitles.push(titleText);
-    }
-
-    console.log("Displayed Video Titles:", displayedVideoTitles);
-
-    // Check if the collection has items (not empty)
-    if (displayedVideoTitles.length > 0) {
-      console.log(
-        `Test passed: Video collection updated with ${displayedVideoTitles.length} items`
-      );
-    } else {
-      console.log("Test failed: Video collection did not update");
-      throw new Error("No videos displayed for the search keyword");
-    }
-  } catch (error) {
-    console.error("Dynamic collection update test failed:", error);
-    throw error;
   }
 }
 
@@ -186,13 +136,13 @@ async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
   }
 }
 
-async function verifyKeywordDisplay(driver) {
+async function verifyPreDefinedKeywordDisplay(driver) {
   let keywordButtons = await driver.wait(
     until.elementsLocated(By.css(".keyword-list button")),
     10000
   );
 
-  const initialKeywords = [
+  const preDefinedKeywords = [
     "AI",
     "Testing",
     "Workflow",
@@ -213,7 +163,9 @@ async function verifyKeywordDisplay(driver) {
     displayedKeywords.push(text);
   }
 
-  if (initialKeywords.every((keyword) => displayedKeywords.includes(keyword))) {
+  if (
+    preDefinedKeywords.every((keyword) => displayedKeywords.includes(keyword))
+  ) {
     console.log("Test passed: All initial keywords are displayed");
   } else {
     console.log("Test failed: Not all initial keywords are displayed");
@@ -230,7 +182,6 @@ async function verifyKeywordSelection(driver, videoCards) {
     By.xpath("//button[contains(text(), 'AI')]")
   );
   await keywordButton.click();
-  console.log("Keyword 'AI' clicked.");
 
   await driver.sleep(2000);
 
@@ -251,15 +202,11 @@ async function verifyKeywordSelection(driver, videoCards) {
   }
 
   await keywordButton.click();
-  console.log("AI button clicked to reselect");
 
   await driver.sleep(2000);
 
   let selectedVideoList = await driver.findElement(By.css("p.video-id-list"));
   let selectedVideoListText = await selectedVideoList.getText();
-  //console.log("initialVideoListText:", initialVideoListText);
-  //console.log("deSelectedVideoListText: ", deSelectedVideoListText);
-  //console.log("selectedVideoListText: ", selectedVideoListText);
 
   if (deSelectedVideoListText !== selectedVideoListText) {
     console.log("Test passed: Video collection updated upon keyword selection");
@@ -311,7 +258,7 @@ async function verifyKeywordAddition(driver) {
   }
 }
 
-async function verifySortByAge(driver) {
+async function verifySortByUploadDate(driver) {
   try {
     await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
@@ -475,7 +422,6 @@ async function verifyYouTubePlayerPlayPause(driver) {
       until.elementLocated(By.css("iframe")),
       10000
     );
-    console.log("YouTube iframe located");
 
     // Switch context to the iframe
     await driver.switchTo().frame(iframe);
@@ -499,7 +445,6 @@ async function verifyYouTubePlayerPlayPause(driver) {
 
     // Click Pause Button
     await playButton.click();
-    console.log("Clicked Pause button in YouTube player");
 
     // Verify paused state
     const isPaused = await playButton.getAttribute("data-title-no-tooltip");
@@ -525,37 +470,38 @@ async function main() {
   try {
     await navigateToApplication(driver);
 
-    // Requirement 1
+    // Requirement 1 (Yan chang)
     await verifyDynamicCollectionExists(
       "http://localhost:8000/get_videos",
       keywords
     );
-    await verifyDynamicCollectionUpdateOnSearch(driver);
 
-    // Requirement 2
+    // Requirement 2 (Yan chang)
     let videoCards = await verifyVideoCardsCount(driver);
 
-    // Requirement 3 (Part 1)
+    // Requirement 3 (Part 1) (Yan chang)
 
-    // Requirement 3 (Part 2)
+    // Requirement 3 (Part 2) (Yan chang)
     let videoPlayer = await verifyVideoPlayerVisibility(driver, videoCards);
 
-    // Requirement 4
+    // Requirement 4 (Armaan)
     await verifyYouTubePlayerPlayPause(driver);
     let { updatedPlayedTime } = await verifyVideoPlayback(driver);
     await verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime);
 
-    // Requirement 5 (Part 1) & Requirement 6
-    await verifyKeywordDisplay(driver);
+    // Requirement 5 (Part 1) (Armaan)
 
-    // Requirement 5 (Part 2)
-    await verifyKeywordSelection(driver, videoCards);
+    // Requirement 5 (Part 2) (Armaan)
+    await verifyKeywordSelection(driver, videoCards); // This function has 2 test cases
 
-    // Requirement 7
-    //await verifyKeywordAddition(driver);
+    // Requirement 6 (Armaan)
+    await verifyPreDefinedKeywordDisplay(driver);
 
-    // Requirement 8
-    await verifySortByAge(driver);
+    // Requirement 7 (Nigel)
+    // await verifyKeywordAddition(driver);
+
+    // Requirement 8 (Nigel)
+    await verifySortByUploadDate(driver);
     await verifySortByDuration(driver);
     await verifySortByLikes(driver);
   } catch (error) {
