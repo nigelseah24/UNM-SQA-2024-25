@@ -247,8 +247,6 @@ async function verifyKeywordSelection(driver, videoCards) {
   let deSelectedVideoList = await driver.findElement(By.css("p.video-id-list"));
   let deSelectedVideoListText = await deSelectedVideoList.getText();
 
-  videoCards = await driver.findElements(By.css(".video-card"));
-
   if (initialVideoListText !== deSelectedVideoListText) {
     console.log(
       "Test passed: Video collection updated upon keyword deselection"
@@ -371,7 +369,7 @@ async function verifySortByDuration(driver) {
   try {
     await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
-    //Selecting duration
+    // Select "Duration" in the sort dropdown
     const sortDropdown = await driver.findElement(By.id("sort"));
     await sortDropdown.click();
     const durationOption = await driver.findElement(
@@ -379,7 +377,7 @@ async function verifySortByDuration(driver) {
     );
     await durationOption.click();
 
-    //Fetch durations of videos
+    // Fetch durations of videos
     const videoElements = await driver.findElements(By.css(".video-card"));
     const durations = [];
 
@@ -387,41 +385,59 @@ async function verifySortByDuration(driver) {
       const durationText = await video
         .findElement(By.css(".video-card p:nth-of-type(4)"))
         .getText();
-      const durationParts = durationText.split(":")[1].trim().split(":");
-      const totalSeconds =
-        durationParts.length === 3
-          ? parseInt(
-              durationParts[0] * 3600 +
-                parseInt(durationParts[1]) * 60 +
-                parseInt(durationParts[2])
-            )
-          : parseInt(durationParts[0] * 60 + parseInt(durationParts[1])); //Handling MM:SS format
+
+      // Clean the text by removing the "Duration:" label
+      const cleanDurationText = durationText.replace("Duration:", "").trim();
+
+      // Split the duration and calculate total seconds
+      const durationParts = cleanDurationText
+        .split(":")
+        .map((part) => parseInt(part, 10));
+      let totalSeconds = 0;
+
+      if (durationParts.length === 3) {
+        // HH:MM:SS format
+        totalSeconds =
+          durationParts[0] * 3600 +
+          durationParts[1] * 60 +
+          durationParts[2];
+      } else if (durationParts.length === 2) {
+        // MM:SS format
+        totalSeconds =
+          durationParts[0] * 60 +
+          durationParts[1];
+      } else {
+        throw new Error(`Invalid duration format: ${durationText}`);
+      }
+
+      durations.push(totalSeconds);
     }
 
-    // console.log(durations);
+    console.log("Durations in seconds: ", durations);
 
-    //Check if sorted properly
+    // Check if sorted in descending order
     let isSorted = true;
     for (let i = 1; i < durations.length; i++) {
       if (durations[i - 1] < durations[i]) {
         isSorted = false;
         console.error(
-          `Sorting error: ${durations[i - 1]} is less than ${durations[i]}`
+          `Sorting error: ${durations[i - 1]} (index ${i - 1}) is less than ${durations[i]} (index ${i})`
         );
         break;
       }
     }
 
     if (isSorted) {
-      console.log("Test passed: Videos are sorted by duration");
+      console.log("Test passed: Videos are sorted by duration.");
     } else {
-      console.log("Test failed: Videos are not sorted by duration");
+      console.log("Test failed: Videos are not sorted by duration.");
     }
   } catch (error) {
-    console.error("verifysortByDuration failed:", error);
+    console.error("verifySortByDuration failed:", error);
     throw error;
   }
 }
+
 
 async function verifySortByLikes(driver) {
   try {
