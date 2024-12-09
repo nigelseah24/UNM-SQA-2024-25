@@ -7,8 +7,9 @@ import { fetchKeywords } from "./api"; // Import the API function
 import "./styling/App.css";
 
 const App: React.FC = () => {
+  // const [query, setQuery] = useState("code");
   const [query, setQuery] = useState(
-    "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation"
+    "Code+Workflow+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation"
   );
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null);
   const [keywords, setKeywords] = useState([]); // State to hold keywords
