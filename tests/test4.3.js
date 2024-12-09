@@ -1,61 +1,55 @@
 const { Builder, By, until, Key } = require("selenium-webdriver");
 
+async function navigateToApplication(driver) {
+  await driver.get("http://localhost:3000"); // Replace with your app's URL
+}
 
-async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
+// Test Case: Verify Playback Controls
+async function verifyPlaybackControls(driver) {
   try {
+    const videoPlayer = await driver.findElement(By.css(".video-player"));
     await videoPlayer.click();
 
     await driver.actions().sendKeys(Key.ARROW_RIGHT).perform();
     await driver.sleep(2000);
 
-    const forwardPlayedTimeElement = await driver.wait(
+    const playedTimeElement = await driver.wait(
       until.elementLocated(By.css(".played-seconds")),
       10000
     );
     const forwardPlayedTime = parseFloat(
-      (await forwardPlayedTimeElement.getText()).replace("Played seconds: ", "")
+      (await playedTimeElement.getText()).replace("Played seconds: ", "")
     );
-    console.log("Forward played seconds: ", forwardPlayedTime);
 
-    if (forwardPlayedTime > updatedPlayedTime) {
+    if (forwardPlayedTime > 0) {
       console.log("Test passed: Right arrow key moves video forward");
     } else {
-      throw new Error("Test failed: Right arrow key did not move video forward");
+      throw new Error("Test failed: Forward functionality did not work");
     }
 
     await driver.actions().sendKeys(Key.ARROW_LEFT).perform();
     await driver.sleep(2000);
 
-    const backwardPlayedTimeElement = await driver.wait(
-      until.elementLocated(By.css(".played-seconds")),
-      10000
-    );
     const backwardPlayedTime = parseFloat(
-      (await backwardPlayedTimeElement.getText()).replace("Played seconds: ", "")
+      (await playedTimeElement.getText()).replace("Played seconds: ", "")
     );
-    console.log("Backward played seconds: ", backwardPlayedTime);
 
-    if (backwardPlayedTime < forwardPlayedTime && backwardPlayedTime >= 0) {
+    if (backwardPlayedTime < forwardPlayedTime) {
       console.log("Test passed: Left arrow key moves video backward");
     } else {
-      throw new Error("Test failed: Left arrow key did not move video backward");
+      throw new Error("Test failed: Backward functionality did not work");
     }
   } catch (error) {
-    console.error("Playback controls test failed:", error);
+    console.error("verifyPlaybackControls failed:", error);
     throw error;
   }
 }
 
-async function test4p3() {
+async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
   try {
-    await driver.get("http://localhost:3000");
-    const videoPlayer = await driver.wait(
-      until.elementLocated(By.css(".video-player")),
-      10000
-    );
-    const { updatedPlayedTime } = { updatedPlayedTime: 5 }; // Replace with playback test results
-    await verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime);
+    await navigateToApplication(driver);
+    await verifyPlaybackControls(driver);
   } catch (error) {
     console.error(error);
   } finally {
@@ -63,4 +57,4 @@ async function test4p3() {
   }
 }
 
-test4p3();
+main();

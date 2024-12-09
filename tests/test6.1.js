@@ -1,5 +1,10 @@
 const { Builder, By, until } = require("selenium-webdriver");
 
+async function navigateToApplication(driver) {
+  await driver.get("http://localhost:3000"); // Replace with your app's URL
+}
+
+// Test Case: Verify Predefined Keyword List Exists
 async function verifyPreDefinedKeywordListExists(driver) {
   try {
     const keywordButtons = await driver.wait(
@@ -7,7 +12,7 @@ async function verifyPreDefinedKeywordListExists(driver) {
       10000
     );
 
-    const initialKeywords = [
+    const predefinedKeywords = [
       "AI",
       "Testing",
       "Workflow",
@@ -23,31 +28,30 @@ async function verifyPreDefinedKeywordListExists(driver) {
     ];
 
     const displayedKeywords = [];
-    for (const button of keywordButtons) {
+    for (let button of keywordButtons) {
       const text = await button.getText();
       displayedKeywords.push(text);
     }
 
     if (
-      initialKeywords.every((keyword) => displayedKeywords.includes(keyword))
+      predefinedKeywords.every((keyword) => displayedKeywords.includes(keyword))
     ) {
       console.log("Test passed: All predefined keywords are displayed");
     } else {
-      console.log("Test failed: Not all predefined keywords are displayed");
-      console.log("Displayed Keywords:", displayedKeywords);
-      console.log("Expected Keywords:", initialKeywords);
-      throw new Error("Keyword list mismatch");
+      throw new Error(
+        "Test failed: Not all predefined keywords are displayed"
+      );
     }
   } catch (error) {
-    console.error("Predefined keyword list test failed:", error);
+    console.error("verifyPreDefinedKeywordListExists failed:", error);
     throw error;
   }
 }
 
-async function test6() {
+async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
   try {
-    await driver.get("http://localhost:3000");
+    await navigateToApplication(driver);
     await verifyPreDefinedKeywordListExists(driver);
   } catch (error) {
     console.error(error);
@@ -56,4 +60,4 @@ async function test6() {
   }
 }
 
-test6();
+main();

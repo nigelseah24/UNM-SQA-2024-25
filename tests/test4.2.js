@@ -1,7 +1,10 @@
 const { Builder, By, until } = require("selenium-webdriver");
 
+async function navigateToApplication(driver) {
+  await driver.get("http://localhost:3000"); // Replace with your app's URL
+}
 
-
+// Test Case: Verify Video Playback
 async function verifyVideoPlayback(driver) {
   try {
     const playedTimeElement = await driver.wait(
@@ -26,17 +29,16 @@ async function verifyVideoPlayback(driver) {
     } else {
       throw new Error("Test failed: Video did not play");
     }
-    return { initialPlayedTime, updatedPlayedTime, playedTimeElement };
   } catch (error) {
-    console.error("Video playback test failed:", error);
+    console.error("verifyVideoPlayback failed:", error);
     throw error;
   }
 }
 
-async function test4p2() {
+async function main() {
   let driver = await new Builder().forBrowser("chrome").build();
   try {
-    await driver.get("http://localhost:3000");
+    await navigateToApplication(driver);
     await verifyVideoPlayback(driver);
   } catch (error) {
     console.error(error);
@@ -45,4 +47,4 @@ async function test4p2() {
   }
 }
 
-test4p2();
+main();
