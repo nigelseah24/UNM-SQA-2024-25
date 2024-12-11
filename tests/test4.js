@@ -123,7 +123,7 @@ async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
   }
 }
 
-describe("Test case 4: Verify YouTube Video Playback", function () {
+describe("Test case 4.1, 4.2, 4.3 & 4.4: Verify YouTube Video Playback", function () {
   let driver;
 
   this.timeout(20000);
