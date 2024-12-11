@@ -1,41 +1,30 @@
-const { Builder, By, until, Key } = require("selenium-webdriver");
-const axios = require("axios"); // Not needed if using in-browser
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 async function verifyVideoCardsCount(driver) {
-  let videoCards = await driver.wait(
+  const videoCards = await driver.wait(
     until.elementsLocated(By.css(".video-card")),
     10000
   );
 
-  if (videoCards.length === 12) {
-    console.log("Test passed: 12 video cards found");
-  } else {
-    console.log(
-      "Test failed: Expected 12 video cards, found " + videoCards.length
-    );
+  if (videoCards.length !== 12) {
     throw new Error("Incorrect number of video cards displayed");
   }
-  return videoCards;
 }
 
-async function test2() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
+describe("Test case 2.1", () => {
+  let driver;
+
+  before(async () => {
+    driver = await getDriver(); // Reuse shared driver
+  });
+
+  it("should verify video cards count", async () => {
     await navigateToApplication(driver);
-
-    // Requirement 1 (Yan chang)
     await verifyVideoCardsCount(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-
-  // Test logic here
-}
-
-test2();
+  });
+});

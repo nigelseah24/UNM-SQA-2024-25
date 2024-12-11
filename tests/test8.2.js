@@ -1,7 +1,8 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 // Test Case 8.2: Sorting by Duration
@@ -63,27 +64,34 @@ async function verifySortByDuration(driver) {
       }
     }
 
-    if (isSorted) {
-      console.log("Test case 8.2 passed: Videos are sorted by duration.");
-    } else {
-      console.log("Test case 8.2 failed: Videos are not sorted by duration.");
+    if (!isSorted) {
+      throw new Error("Videos are not sorted by duration");
     }
   } catch (error) {
     console.error("verifySortByDuration failed:", error);
-    throw error;
+    throw error; // Re-throw to let Mocha handle the failure
   }
 }
 
-async function main() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
-    await navigateToApplication(driver);
-    await verifySortByDuration(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-}
+describe("Test case 8.2: Sorting by Duration", function () {
+  let driver;
 
-main();
+  // Set Mocha timeout to 20 seconds to ensure the test has enough time to run
+  this.timeout(20000);
+
+  // Setup WebDriver before tests
+  before(async () => {
+    driver = await getDriver(); // Reuse shared WebDriver instance
+  });
+
+  // Test case: Verify Sorting by Duration
+  it("should sort videos by duration in descending order", async () => {
+    try {
+      await navigateToApplication(driver);
+      await verifySortByDuration(driver); // Call the function to verify sorting
+    } catch (error) {
+      console.error(error);
+      throw error; // Ensure Mocha handles the failure
+    }
+  });
+});

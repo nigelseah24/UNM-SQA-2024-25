@@ -149,10 +149,7 @@ def get_youtube_videos(query: str):
     try:
         # Call the search_youtube function to retrieve video IDs
         youtube_response = search_youtube(query)
-        print(youtube_response)
         video_ids = [item['id']['videoId'] for item in youtube_response.get('items', []) if 'videoId' in item['id']]
-
-        print(f"Number of videos returned: {len(video_ids)}") # log number of videos returned
         
         # Ensure only 20 video IDs are retrieved
         video_ids = video_ids[:20]
@@ -175,7 +172,6 @@ def get_youtube_videos(query: str):
             }
             videos.append(video_data)
 
-        print(f"Final video count: {len(videos)}")
         return {"items": videos}
     
     except Exception as e:

@@ -1,7 +1,8 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 // Test Case 8.3: Sorting by Number of Likes
@@ -9,7 +10,7 @@ async function verifySortByLikes(driver) {
   try {
     await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
-    //Selecting Likes from dropdown
+    // Selecting Likes from dropdown
     const sortDropdown = await driver.findElement(By.id("sort"));
     await sortDropdown.click();
     const likesOption = await driver.findElement(
@@ -17,7 +18,7 @@ async function verifySortByLikes(driver) {
     );
     await likesOption.click();
 
-    //Fetch likes of videos
+    // Fetch likes of videos
     const videoElements = await driver.findElements(By.css(".video-card"));
     const likes = [];
 
@@ -28,12 +29,11 @@ async function verifySortByLikes(driver) {
 
       const likesCount = parseInt(
         likesText.split(":")[1].trim().replace(/,/g, "")
-      ); //Get numeric part and remove commas
-      //console.log(likesCount);
+      ); // Get numeric part and remove commas
       likes.push(likesCount);
     }
 
-    //Check if likes are sorted properly
+    // Check if likes are sorted properly
     let isSorted = true;
     for (let i = 1; i < likes.length; i++) {
       if (likes[i - 1] < likes[i]) {
@@ -45,27 +45,34 @@ async function verifySortByLikes(driver) {
       }
     }
 
-    if (isSorted) {
-      console.log("Test case 8.3 passed: Videos are sorted by likes");
-    } else {
-      console.log("Test case 8.3 failed: Videos are not sorted by likes");
+    if (!isSorted) {
+      throw new Error("Videos are not sorted by likes");
     }
   } catch (error) {
-    console.error("verifySortByLikes failed: ", error);
-    throw error;
+    console.error("verifySortByLikes failed:", error);
+    throw error; // Re-throw to let Mocha handle the failure
   }
 }
 
-async function main() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
-    await navigateToApplication(driver);
-    await verifySortByLikes(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-}
+describe("Test case 8.3: Sorting by Number of Likes", function () {
+  let driver;
 
-main();
+  // Set Mocha timeout to 20 seconds to ensure the test has enough time to run
+  this.timeout(20000);
+
+  // Setup WebDriver before tests
+  before(async () => {
+    driver = await getDriver(); // Reuse shared WebDriver instance
+  });
+
+  // Test case: Verify Sorting by Likes
+  it("should sort videos by likes in descending order", async () => {
+    try {
+      await navigateToApplication(driver);
+      await verifySortByLikes(driver); // Call the function to verify sorting
+    } catch (error) {
+      console.error(error);
+      throw error; // Ensure Mocha handles the failure
+    }
+  });
+});

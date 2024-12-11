@@ -1,8 +1,9 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 const { parse } = require("date-fns");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 // Test Case 8.1: Sorting by Upload Date
@@ -10,7 +11,7 @@ async function verifySortByUploadDate(driver) {
   try {
     await driver.wait(until.elementLocated(By.css(".video-card")), 10000);
 
-    //Selecting date uploaded
+    // Selecting date uploaded
     const sortDropdown = await driver.findElement(By.id("sort"));
     await sortDropdown.click();
     const dateOption = await driver.findElement(
@@ -18,7 +19,7 @@ async function verifySortByUploadDate(driver) {
     );
     await dateOption.click();
 
-    //Fetch published dates of videos
+    // Fetch published dates of videos
     const videoElements = await driver.findElements(By.css(".video-card"));
     const publishedDates = [];
 
@@ -42,7 +43,7 @@ async function verifySortByUploadDate(driver) {
       }
     }
 
-    //Checking if dates sorted in descending order
+    // Checking if dates are sorted in descending order
     let isSorted = true;
     for (let i = 1; i < publishedDates.length; i++) {
       if (publishedDates[i - 1] < publishedDates[i]) {
@@ -56,27 +57,34 @@ async function verifySortByUploadDate(driver) {
       }
     }
 
-    if (isSorted) {
-      console.log("Test case 8.1 passed: Videos are sorted by upload date");
-    } else {
-      console.log("Test case 8.1 failed: Videos are not sorted by upload date");
+    if (!isSorted) {
+      throw new Error("Videos are not sorted by upload date");
     }
   } catch (error) {
-    console.log("verifySortByUploadDate failed:", error);
-    throw error;
+    console.error("verifySortByUploadDate failed:", error);
+    throw error; // Re-throw to let Mocha handle the failure
   }
 }
 
-async function main() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
-    await navigateToApplication(driver);
-    await verifySortByUploadDate(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-}
+describe("Test case 8.1: Sorting by Upload Date", function () {
+  let driver;
 
-main();
+  // Set Mocha timeout to 20 seconds to ensure the test has enough time to run
+  this.timeout(20000);
+
+  // Setup WebDriver before tests
+  before(async () => {
+    driver = await getDriver(); // Reuse shared WebDriver instance
+  });
+
+  // Test case: Verify Sorting by Upload Date
+  it("should sort videos by upload date in descending order", async () => {
+    try {
+      await navigateToApplication(driver);
+      await verifySortByUploadDate(driver); // Call the function to verify sorting
+    } catch (error) {
+      console.error(error);
+      throw error; // Ensure Mocha handles the failure
+    }
+  });
+});

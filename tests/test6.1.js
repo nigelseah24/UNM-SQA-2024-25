@@ -1,7 +1,8 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 // Test Case: Verify Predefined Keyword List Exists
@@ -34,12 +35,12 @@ async function verifyPreDefinedKeywordListExists(driver) {
     }
 
     if (
-      predefinedKeywords.every((keyword) => displayedKeywords.includes(keyword))
+      !predefinedKeywords.every((keyword) =>
+        displayedKeywords.includes(keyword)
+      )
     ) {
-      console.log("Test passed: All predefined keywords are displayed");
-    } else {
       throw new Error(
-        "Test failed: Not all predefined keywords are displayed"
+        "Test case 6.1 failed: Not all predefined keywords are displayed"
       );
     }
   } catch (error) {
@@ -48,16 +49,25 @@ async function verifyPreDefinedKeywordListExists(driver) {
   }
 }
 
-async function main() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
-    await navigateToApplication(driver);
-    await verifyPreDefinedKeywordListExists(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-}
+describe("Test case 6.1: Verify Predefined Keyword List Exists", function () {
+  let driver;
 
-main();
+  // Set Mocha timeout to 20 seconds to avoid premature timeout errors
+  this.timeout(20000);
+
+  // Setup WebDriver before tests
+  before(async () => {
+    driver = await getDriver(); // Reuse shared WebDriver
+  });
+
+  // Test case: Verify Predefined Keyword List Exists
+  it("should verify that all predefined keywords are displayed", async () => {
+    try {
+      await navigateToApplication(driver);
+      await verifyPreDefinedKeywordListExists(driver); // Call the function to verify the keyword list
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  });
+});

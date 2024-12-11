@@ -9,6 +9,6 @@
     "selenium-webdriver": "^4.27.0"
   },
   "scripts": {
-    "test": "mocha tests/**/*.js"
+    "test": "mocha --file setup.js tests/**/*.js --exit --timeout 10000"
   }
 }

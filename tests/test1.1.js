@@ -1,8 +1,8 @@
-const { Builder, By, until, Key } = require("selenium-webdriver");
-const axios = require("axios"); // Not needed if using in-browser
+const axios = require("axios");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
 // Requirement 1
@@ -15,11 +15,8 @@ async function verifyDynamicCollectionExists(url, query) {
       const items = response.data.items;
 
       if (items.length === 20) {
-        console.log("Test passed: Dynamic Collection of 20 videos exists.");
+        return;
       } else {
-        console.error(
-          `Collection size mismatch: Expected 20 videos, but found ${items.length}.`
-        );
         throw new Error("Collection does not contain 20 videos.");
       }
     } else {
@@ -32,24 +29,18 @@ async function verifyDynamicCollectionExists(url, query) {
   }
 }
 
-async function test1() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  let keywords =
-    "Workflow+Code+Assistant+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation";
-  try {
+describe("Test case 1.1", () => {
+  let driver;
+
+  before(async () => {
+    driver = await getDriver(); // Initialize shared driver
+  });
+
+  it("should verify dynamic collection exists", async () => {
     await navigateToApplication(driver);
-    // Requirement 1 (Yan chang)
     await verifyDynamicCollectionExists(
       "http://localhost:8000/get_videos",
-      keywords
+      "Assistant+Code+Workflow+AI+Software+Development+Debugging+Testing+Documentation+Learning+Tools+Automation"
     );
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-
-  // Test logic here
-}
-
-test1();
+  });
+});

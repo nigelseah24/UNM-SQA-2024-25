@@ -1,21 +1,24 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { By, until } = require("selenium-webdriver");
+const { getDriver } = require("../driverManager");
 
 async function navigateToApplication(driver) {
-  await driver.get("http://localhost:3000"); // Replace with your app's URL
+  await driver.get("http://localhost:3000");
 }
 
-// Test Case: Verify Keyword List Exists
+// Keep the verifyKeywordListExists function as-is
 async function verifyKeywordListExists(driver) {
   try {
     const keywordButtons = await driver.wait(
       until.elementsLocated(By.css(".keyword-list button")),
-      10000
+      10000 // Wait up to 10 seconds
     );
 
     if (keywordButtons.length > 0) {
-      console.log("Test passed: Keyword list exists and is populated");
+      return;
     } else {
-      throw new Error("Test failed: Keyword list is empty or not rendered");
+      throw new Error(
+        "Test case 5.1 failed: Keyword list is empty or not rendered"
+      );
     }
   } catch (error) {
     console.error("verifyKeywordListExists failed:", error);
@@ -23,16 +26,25 @@ async function verifyKeywordListExists(driver) {
   }
 }
 
-async function main() {
-  let driver = await new Builder().forBrowser("chrome").build();
-  try {
-    await navigateToApplication(driver);
-    await verifyKeywordListExists(driver);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await driver.quit();
-  }
-}
+describe("Test case 5.1: Verify Keyword List Exists", function () {
+  let driver;
 
-main();
+  // Set Mocha timeout to 20 seconds to avoid premature timeout errors
+  this.timeout(20000);
+
+  // Setup WebDriver before tests
+  before(async () => {
+    driver = await getDriver(); // Reuse shared WebDriver
+  });
+
+  // Test case: Verify Keyword List Exists
+  it("should verify keyword list exists and is populated", async () => {
+    try {
+      await navigateToApplication(driver);
+      await verifyKeywordListExists(driver); // Call the function to verify the keyword list
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  });
+});
