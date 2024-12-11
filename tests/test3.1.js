@@ -32,8 +32,6 @@ async function verifyVideoThumbnailsAndTitles(driver) {
       throw new Error(`Video card ${i + 1} does not have a valid title.`);
     }
   }
-
-  // console.log("Test case 3.1 passed: All videos have thumbnails and titles.");
 }
 
 describe("Test case 3.1", () => {

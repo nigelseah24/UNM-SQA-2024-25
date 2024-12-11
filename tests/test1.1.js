@@ -14,9 +14,7 @@ async function verifyDynamicCollectionExists(url, query) {
     if (response.status === 200 && response.data.items) {
       const items = response.data.items;
 
-      if (items.length === 20) {
-        return;
-      } else {
+      if (items.length !== 20) {
         throw new Error("Collection does not contain 20 videos.");
       }
     } else {

@@ -60,12 +60,9 @@ async function verifyYouTubePlayerPlayPause(driver) {
     await playButton.click();
 
     const isPlaying = await playButton.getAttribute("data-title-no-tooltip");
-    if (isPlaying.includes("Pause")) {
-      // console.log("Test case 4.2 passed: Video is playing in YouTube player");
-    } else {
+    if (!isPlaying.includes("Pause")) {
       throw new Error("Test case 4.2 failed: Video did not start playing");
     }
-
     await driver.switchTo().defaultContent();
   } catch (error) {
     console.error("verifyYouTubePlayerPlayPause failed:", error);
@@ -106,12 +103,7 @@ async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
     (await forwardPlayedTimeElement.getText()).replace("Played seconds: ", "")
   );
 
-  if (forwardPlayedTime > updatedPlayedTime) {
-    // console.log("Test case 4.3 passed: Right arrow key moves video forward");
-  } else {
-    console.log(
-      "Test case 4.3 failed: Right arrow key did not move video forward"
-    );
+  if (!(forwardPlayedTime > updatedPlayedTime)) {
     throw new Error("Forward functionality failed");
   }
 
@@ -126,12 +118,7 @@ async function verifyPlaybackControls(driver, videoPlayer, updatedPlayedTime) {
     (await backwardPlayedTimeElement.getText()).replace("Played seconds: ", "")
   );
 
-  if (backwardPlayedTime < forwardPlayedTime && backwardPlayedTime >= 0) {
-    // console.log("Test case 4.4 passed: Left arrow key moves video backward");
-  } else {
-    console.log(
-      "Test case 4.4 failed: Left arrow key did not move video backward"
-    );
+  if (!(backwardPlayedTime < forwardPlayedTime && backwardPlayedTime >= 0)) {
     throw new Error("Backward functionality failed");
   }
 }
