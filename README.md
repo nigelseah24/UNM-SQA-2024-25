@@ -99,13 +99,26 @@ This command will:
 - Launch the server at `http://127.0.0.1:8000`.
 - Enable **hot reloading**, so the server will restart automatically when you make changes to your code.
 
-### 6. Download Postman to Test the API (For testing only)
+## Testing
 
-You can use [Postman](https://www.postman.com/downloads/) to easily test the API endpoints.
+### 1. Downloading Test Dependencies
 
-1. Download and install Postman.
-2. Create a new request in Postman, choose the appropriate HTTP method (e.g., `POST`), and enter your API endpoint URL.
-3. Provide the necessary input data (e.g., JSON payload that you can find in spellingCheckerSample.txt) and hit **Send**.
-4. Review the API response directly within Postman.
+Make sure that you are in the root directory `/UNM-SQA-2024-25`, then run the following command:
 
-Alternatively, you can use FastAPI's built-in interactive docs at `http://127.0.0.1:8000/docs` to explore and test the API.
+```bash
+npm install
+```
+
+### 2. Run the Tests
+
+Run the test cases by running the following command:
+
+```bash
+npm test
+```
+
+# Team Members
+
+1. Nigel Seah Jun Yang (20514951)
+2. Mohamed Armaan Farhan (20492238)
+3. Chan Yan Chang (20512136)
